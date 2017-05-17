@@ -1,11 +1,9 @@
 node_modules
 eslint.xml
 npm-debug.log
-webui.zip
-*~
 .*
 !.gitignore
 !.eslintignore
 !.eslintrc.js
-dist
+
 
