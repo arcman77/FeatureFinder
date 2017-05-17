@@ -1,0 +1,16 @@
+{
+  "name": "stocktrends",
+  "version": "1.0.0",
+  "description": "This npm package manages dev-dependencies for the $stockTrend$ chrome-extension project.",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "eslint": "^3.14.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "author": "Andrew R Carpenter",
+  "license": "MIT"
+}
