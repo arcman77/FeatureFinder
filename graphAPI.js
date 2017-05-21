@@ -4,11 +4,11 @@ function graphHighCharts(array, containerSelector, scale, series, symbol) {
     $(containerSelector).css('overflow', 'auto');
 
     if (!series) {
-       seriesUsed = [{
-           id: scale + 'price',
-           name: scale + 'price',
-           data: array
-       }];
+        seriesUsed = [{
+            id: `${scale} price`,
+            name: `${scale} price`,
+            data: array
+        }];
     } else {
         seriesUsed = series;
     }
