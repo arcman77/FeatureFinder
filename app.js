@@ -1,5 +1,5 @@
-const StockDataAPI = StockDataAPI || null;
-const GraphAPI = GraphAPI || null;
+var StockDataAPI = StockDataAPI || null;
+var GraphAPI = GraphAPI || null;
 
 function App() {
     this.selectors = {
@@ -17,22 +17,26 @@ App.prototype.addForm = function() {
     checkPageButton.addEventListener('click', () => {
         if (!textInputPresent) {
             chrome.tabs.getSelected(null, (tab) => {
+                var backgroundPage = chrome.extension.getBackgroundPage();
+                backgroundPage.console.log('yooo');
+
                 const d = document;
-                const f = d.createElement('form');
+                // const f = d.createElement('form');
                 const i = d.createElement('input');
                 const b = d.createElement('button');
                 b.textContent = 'GO';
-                b.id = this.stockSymbolTextInputId;
+                b.id = backgroundPage.app.selectors.stockSymbolTextInputId;
                 i.type = 'text';
                 i.name = 'symbol';
                 i.value = 'DIG';
                 i.autocomplete = 'on';
                 // i.value = tab.url;
-                f.appendChild(i);
-                f.appendChild(b);
-                d.body.appendChild(f);
+                // f.appendChild(i);
+                // f.appendChild(b);
+                d.body.appendChild(i);
+                d.body.appendChild(b);
                 textInputPresent = true;
-                self.listenForUserInput(b);
+                backgroundPage.app.listenForUserInput(b);
             });
         }
     }, false);
@@ -42,6 +46,7 @@ App.prototype.addNewStockRequest = function(symbol) {
     var req = this.stockDataAPI.queryYahooFinance(symbol);
     req.then((stockData) => {
         this.stockDataAPI.addStock(symbol, stockData);
+        console.log(stockData)
     });
     req.catch((error) => {
         //TODO: handle error better
@@ -51,6 +56,7 @@ App.prototype.addNewStockRequest = function(symbol) {
 
 App.prototype.listenForUserInput = function(button) {
     var self = this;
+    console.log('stuff')
     button.addEventListener('click', (e) => {
         var symbol = document.getElementById(this.selectors.stockSymbolTextInputId).value;
         self.addNewStockRequest(symbol);

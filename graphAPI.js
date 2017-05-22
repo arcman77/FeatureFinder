@@ -1,4 +1,8 @@
-function graphHighCharts(array, containerSelector, scale, series, symbol) {
+function GraphAPI() {
+    // add stuff
+}
+
+GraphAPI.prototype.graphHighCharts = function(array, containerSelector, scale, series, symbol) {
     var title = `${symbol} Price Data`;
     var seriesUsed;
     $(containerSelector).css('overflow', 'auto');
@@ -52,9 +56,9 @@ function graphHighCharts(array, containerSelector, scale, series, symbol) {
             enabled: false
         },
     });
-}
+};
 
-function getSignalSeries(processedStockData, stockAlgoFunction) {
+GraphAPI.prototype.getSignalSeries = function(processedStockData, stockAlgoFunction) {
     var series = [];
     var scale = 'Day';
 
@@ -118,4 +122,4 @@ function getSignalSeries(processedStockData, stockAlgoFunction) {
     });
 
     return series; //contains regular stock data in addition to the newly generated signals
-}
+};
