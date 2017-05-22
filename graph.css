@@ -1,0 +1,23 @@
+body {
+	width: 500px;
+}
+
+.graph {
+	margin-top: 1em;
+	display: none;
+	border: solid 1px black;
+	background-repeat: no-repeat;
+	width: 200px;
+}
+
+.graphs-container {
+	margin: 1em;
+}
+
+#add-stock-symbol {
+	color: white;
+	background-color: green;
+	border: 0;
+	border-radius: 3px;
+	margin-left: 1em;
+}

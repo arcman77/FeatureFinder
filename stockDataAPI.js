@@ -8,12 +8,13 @@ StockDataAPI.prototype.removeStock = function(symbol) {
     var index = this.selectedStocks.indexOf(symbol);
     this.selectedStocks.splice(index);
     delete this.stockData[symbol];
-    StockDataAPI.setItem(this.selectedStocks, this.selectedStocksKey);
+    this.setItem(this.selectedStocks, this.selectedStocksKey);
 };
 
-StockDataAPI.prototype.addStock = function(symbol) {
+StockDataAPI.prototype.addStock = function(symbol, stockData) {
     this.selectedStocks.push(symbol);
-    StockDataAPI.addItem(this.selectedStocks, this.selectedStocksKey);
+    this.addItem(this.selectedStocks, this.selectedStocksKey);
+    this.stockData[symbol] = stockData || [];
 };
 
 StockDataAPI.prototype.removeItem = function(name) {
@@ -55,25 +56,24 @@ StockDataAPI.prototype.yahooJson2HighchartsDATA = function(arrayOfJson) {
     return mappedData;
 };
 
-StockDataAPI.prototype.queryYahooFinance = function(symbol, callback) {
-// function queryYahooAPI(symbol,callback,container){
+StockDataAPI.prototype.queryYahooFinance = function(symbol) {
     var yqlApiBase = 'https://query.yahooapis.com/v1/public/yql?';
-    var query = 'q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22'+ symbol + '%22%20and%20startDate%20%3D%20%222014-06-11%22%20and%20endDate%20%3D%20%222015-09-14%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys'; 
+    var query = 'q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + symbol + '%22%20and%20startDate%20%3D%20%222016-01-11%22%20and%20endDate%20%3D%20%222017-05-14%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
     var request = $.ajax({
         url: yqlApiBase + query,
         method: 'GET'
     });
 
-    request.done((response) => {
+    request.then((response) => {
         var goodQuery = response['query']['results'] !== null;
         if (goodQuery) {
             return response['query']['results']['quote'];
-            // const result = callback(response['query']['results']['quote']);
-            // processedStockData[symbol] = result;
-            // graphHome(result,container,'Day',undefined,symbol);
         }
-        alert('The stock '+ symbol + ' does not exsist. Please find the correct ticker symbol.');
+        // eslint-disable-next-line no-throw-literal
+        throw `The stock symbol ${symbol} does not exsist. Please choose a valid ticker symbol`;
     });
+
+    return request;
 };
 
 

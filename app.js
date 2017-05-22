@@ -1,29 +1,58 @@
+const StockDataAPI = StockDataAPI || null;
+const GraphAPI = GraphAPI || null;
+
 function App() {
-  this.selectors = {
-    graphContainer: 
-  }
+    this.selectors = {
+        graphContainer: 'graphs-container'
+    };
+    this.stockDataAPI = new StockDataAPI();
+    this.graphAPI = new GraphAPI();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  var checkPageButton = document.getElementById('checkStocks');
-  checkPageButton.addEventListener('click', function() {
+App.prototype.addForm = function() {
+    var checkPageButton = document.getElementById('add-stocks');
+    var textInputPresent = false;
 
-    chrome.tabs.getSelected(null, function(tab) {
-      d = document;
+    checkPageButton.addEventListener('click', () => {
+        if (!textInputPresent) {
+            chrome.tabs.getSelected(null, (tab) => {
+                const d = document;
+                const f = d.createElement('form');
+                const i = d.createElement('input');
+                const b = d.createElement('button');
+                b.textContent = 'GO';
+                b.id = 'add-stock-symbol';
+                i.type = 'text';
+                i.name = 'symbol';
+                i.value = 'DIG';
+                i.autocomplete = 'on';
+                // i.value = tab.url;
+                f.appendChild(i);
+                f.appendChild(b);
+                d.body.appendChild(f);
+                textInputPresent = true;
+            });
+        }
+    }, false);
+};
 
-      var f = d.createElement('form');
-      f.action = 'http://gtmetrix.com/analyze.html?bm';
-      f.method = 'post';
-      var i = d.createElement('input');
-      i.type = 'hidden';
-      i.name = 'url';
-      i.value = tab.url;
-      f.appendChild(i);
-      d.body.appendChild(f);
-      f.submit();
+App.prototype.addNewStockRequest = function(symbol) {
+    var req = this.stockDataAPI.queryYahooFinance(symbol);
+    req.then((stockData) => {
+        this.stockDataAPI.addStock(symbol, stockData);
     });
-  }, false);
-}, false);
+    req.catch((error) => {
+        alert(error);
+    });
+};
+
+App.prototype.listenForUserInput = function(button) {
+    var listener = button.addEventListener('click', )
+};
+
+const app = new App();
+
+document.addEventListener('DOMContentLoaded', app.addForm, false);
 
 //function graph
 
