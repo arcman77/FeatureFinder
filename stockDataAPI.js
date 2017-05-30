@@ -56,26 +56,24 @@ StockDataAPI.prototype.yahooJson2HighchartsDATA = function(arrayOfJson) {
     return mappedData;
 };
 
-StockDataAPI.prototype.queryYahooFinance = function(symbol) {
-    var yqlApiBase = 'https://query.yahooapis.com/v1/public/yql?';
-    var query = 'q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + symbol + '%22%20and%20startDate%20%3D%20%222016-01-11%22%20and%20endDate%20%3D%20%222017-05-14%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
-    var request = $.ajax({
+StockDataAPI.prototype.queryYahooFinance = function(symbol, start, stop) {
+    const a = new Date();
+    const b = this.addMonths(a, -6);
+    //  '2017-5-29'
+    const stopUsed = stop || `${ a.getFullYear() }-${ (a.getMonth()+1) }-${ a.getDate() }`;
+    const startUsed = start || `${ b.getFullYear() }-${ (b.getMonth()+1) }-${ b.getDate() }`;
+    const yqlApiBase = 'https://query.yahooapis.com/v1/public/yql?';
+    const query = 'q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + symbol + '%22%20and%20startDate%20%3D%20%22' + startUsed + '%22%20and%20endDate%20%3D%20%22' + stopUsed + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+    console.log(yqlApiBase + query)
+    const request = $.ajax({
         url: yqlApiBase + query,
         method: 'GET'
-    });
-
-    request.then((response) => {
-        var goodQuery = response['query']['results'] !== null;
-        if (goodQuery) {
-            return response['query']['results']['quote'];
-        }
-        // eslint-disable-next-line no-throw-literal
-        throw `The stock symbol ${symbol} does not exsist. Please choose a valid ticker symbol`;
     });
 
     return request;
 };
 
-
-StockDataAPI.prototype.queryGoogleFinance = function() {
-}
+StockDataAPI.prototype.addMonths = function(date, months) {
+  date.setMonth(date.getMonth() + months);
+  return date;
+};
