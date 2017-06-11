@@ -1,4 +1,5 @@
-function StockDataAPI() {
+function StockDataAPI(DB) {
+    this.DB = DB;
     this.selectedStocks = [];
     this.selectedStocksKey = '_selectedStocks_';
     this.stockData = {};

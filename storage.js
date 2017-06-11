@@ -16,9 +16,6 @@ function DB() {
     this.storage = chrome.storage;
     this.localStorage = this.storage.local;
     this.syncStorage = this.storage.sync;
-    this.syncStorage.get(['_coinData_'], (coinData) => {
-        self.coinData = coinData || {};
-    });
     this.syncStorage.get(['_stockData_'], (stockData) => {
         self.stockData = stockData || {};
     });
@@ -43,9 +40,7 @@ DB.prototype.syncGetItem = function(key) {
     return this._syncStorageQueryTemplate_(key, this.syncStorage.get);
 };
 
-DB.prototype.syncGetItems = function(arrayOfKeys) {
-    return this._syncStorageQueryTemplate_(arrayOfKeys, this.syncDB.get);
-};
+DB.prototype.syncGetItems = DB.prototype.syncGetItem;
 
 DB.prototype.syncGetAll = function() {
     return this._syncStorageQueryTemplate_(null, this.syncStorage.get);
@@ -60,60 +55,58 @@ DB.prototype.syncSetItem = function(dictionary) {
     return this._chromeStorageQueryTemplate_(dictionary, this.syncStorage.set);
 };
 
-DB.prototype.syncSetItems = function(dictionary) {
-    return this.syncSetItem(dictionary);
+DB.prototype.syncSetItems = DB.prototype.syncSetItem;
+
+DB.prototype.syncRemoveItem = function(key) {
+    return this._syncStorageQueryTemplate_(key, this.syncStorage.remove);
 };
 
-StockDataAPI.prototype.addItem = function(item, name) {
-    var toBeStored = {
-        type: Array.isArray(item) ? 'Array' : typeof (item),
-        value: item
-    };
-    toBeStored = JSON.stringify(toBeStored);
-    window.localStorage.setItem(name, toBeStored);
-};
-
-
-
-StockDataAPI.prototype.removeStock = function(symbol) {
-    var index = this.selectedStocks.indexOf(symbol);
-    this.selectedStocks.splice(index);
-    delete this.stockData[symbol];
-    this.setItem(this.selectedStocks, this.selectedStocksKey);
-};
-
-StockDataAPI.prototype.addStock = function(symbol, stockData) {
-    this.selectedStocks.push(symbol);
-    this.addItem(this.selectedStocks, this.selectedStocksKey);
-    this.stockData[symbol] = stockData || [];
-};
-
-StockDataAPI.prototype.removeItem = function(name) {
-    window.localStorage.removeItem(name);
-};
-
-StockDataAPI.prototype.getItem = function(name) {
-    var obj = window.localStorage.getItem(name);
-    if (!obj) {
-        return;
+DB.prototype.syncRemoveItems = function(collection) {
+    var toBeDeleted = [];
+    if (!Array.isArray(collection) && typeof (collection) === 'object') {
+        Object.keys(collection).forEach((key) => {
+            toBeDeleted.push(key);
+        });
+    } else {
+        toBeDeleted = collection;
     }
-    obj = JSON.parse(obj);
-    const typeMatch = Array.isArray(obj.value) ? 'Array' : typeof (obj.value) === obj.type;
-    if (!typeMatch) {
-        console.warn(`Data loss: ${obj.value} does not match specified type ${obj.type}`);
+
+    return this._syncStorageQueryTemplate_(toBeDeleted, this.syncStorage.remove);
+};
+
+DB.prototype._localStorageQueryTemplate_ = DB.prototype._syncStorageQueryTemplate_;
+
+DB.prototype.localGetItem = function(key) {
+    return this._localStorageQueryTemplate_(key, this.localStorage.get);
+};
+
+DB.prototype.localGetItems = DB.prototype.localGetItem;
+
+/** localSetItem
+ * @dictionary Object - regular object with key value pairs
+ * example - { 'foo': 'hello', 'bar': 'hi', 'one': 1 }
+*/
+
+DB.prototype.localSetItem = function(dictionary) {
+    this._localStorageQueryTemplate_(dictionary, this.localStorage.set);
+};
+
+DB.prototype.localSetItems = DB.prototype.localSetItem;
+
+DB.prototype.localRemoveItem = function(key) {
+    return this._localStorageQueryTemplate_(key, this.localStorage.remove);
+};
+
+DB.prototype.localRemoveItems = function(collection) {
+    var toBeDeleted = [];
+    if (!Array.isArray(collection) && typeof (collection) === 'object') {
+        Object.keys(collection).forEach((key) => {
+            toBeDeleted.push(key);
+        });
+    } else {
+        toBeDeleted = collection;
     }
-    return obj.value;
+
+    return this._localStorageQueryTemplate_(toBeDeleted, this.syncStorage.remove);
 };
 
-StockDataAPI.prototype.addItem = function(item, name) {
-    var toBeStored = {
-        type: Array.isArray(item) ? 'Array' : typeof (item),
-        value: item
-    };
-    toBeStored = JSON.stringify(toBeStored);
-    window.localStorage.setItem(name, toBeStored);
-};
-
-StockDataAPI.prototype.setItem = function(item, name) {
-    StockDataAPI.addItem(item, name);
-};

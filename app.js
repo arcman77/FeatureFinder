@@ -1,11 +1,12 @@
 var StockDataAPI = StockDataAPI || null;
 var GraphAPI = GraphAPI || null;
-
+var DB = DB || null;
 function App() {
     this.selectors = {
         graphContainerId: 'graphs-container',
         stockSymbolTextInputId: 'add-stock-symbol'
     };
+    this.DB = new DB();
     this.stockDataAPI = new StockDataAPI();
     this.graphAPI = new GraphAPI();
     this.console = chrome.extension.getBackgroundPage().console
