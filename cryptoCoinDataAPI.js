@@ -7,7 +7,7 @@ function CryptoCoinDataAPI(DB) {
     this.selectedCoinsKey = '_selectedCoins_';
     this.priceDataKey = '_priceData_';
     this.DB.get(this.storageKey).then((coinData) => {
-        self.coinData = coinData
+        self.coinData = coinData;
         if (!coinData) {
             self.coinData[self.selectedCoinsKey] = [];
             self.coinData[self.priceDataKey] = {};
