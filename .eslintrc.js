@@ -30,6 +30,6 @@ module.exports = {
     },
     "globals": {
         "Vue": true,
-        "videojs": true
+        "chrome": true
     }
 };
