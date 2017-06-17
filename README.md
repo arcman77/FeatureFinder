@@ -1,3 +1,3 @@
 # FeatureFinder
-Track and analyze your favorite stocks using your own algorithms or metrics, and also get alerts.
+:cyclone: Track and analyze your favorite cryptocoins as well as stocks using your own algorithms or metrics, and also get alerts.
 
