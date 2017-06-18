@@ -1,11 +1,12 @@
+const GA_CODE = require('./GA_PRODUCT_CODE');
 
 const APP_NAME = 'FeatureFinder';
 const APP_ID = 'DEFAULT';
 const APP_VERSION = 'DEFAULT';
 const APP_INSTALLER_ID = 'DEFAULT';
 const CAMPAIGN = 'DEFUALT';
-const GA_PRODUCT_CODE = process.env.NODE_ENV === 'production' ? 'PROD' : 'DEV';
-const COOKIE_DOMAIN = 'FeatureFinder.com';
+const GA_PRODUCT_CODE = process.env.NODE_ENV === 'production' ? GA_CODE['PROD'] : GA_CODE['DEV'];
+const COOKIE_DOMAIN = 'http://FeatureFinder.com';
 const DEV = process.env.NODE_ENV !== 'production';
 
 module.exports = {

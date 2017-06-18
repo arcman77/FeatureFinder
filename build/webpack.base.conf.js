@@ -47,12 +47,15 @@ module.exports = {
             {
                 test: /\.(jpe?g|png|gif|svg|ico)$/,
                 use: 'file-loader?name=imgs/[name].[ext]'
+            }, {
+                test: /icon/,
+                use: 'file-loader?name=[name].[ext]'
             }
         ]
     },
     resolve: {
         alias: {
-            'vue$': path.join('vue', 'extension_bundle', 'vue.common.js')
+            'vue$': path.join('vue', 'dist', 'vue.common.js')
         }
     },
     plugins: [

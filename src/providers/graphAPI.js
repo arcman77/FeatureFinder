@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-unused-vars
+import highcharts from 'highcharts';
+
 class GraphAPI {
     static graphHighCharts(array, containerSelector, scale, series, symbol) {
         var title = `${symbol} Price Data`;

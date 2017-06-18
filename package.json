@@ -22,7 +22,7 @@
     "babel-runtime": "^5.8.0",
     "bencode": "^0.11.0",
     "clean-webpack-plugin": "^0.1.15",
-    "cross-env": "^3.2.4",
+    "cross-env": "latest",
     "css-loader": "^0.26.1",
     "d3": "^4.5.0",
     "drag-drop": "^2.13.2",

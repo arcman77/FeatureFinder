@@ -10,7 +10,7 @@ module.exports = merge(baseWebpackConfig, {
         // Zip output directory
         new ZipPlugin({
             path: '..',
-            filename: 'webui.zip'
+            filename: 'extension_bundle.zip'
         }),
         // Delete output directory
         new CleanWebpackPlugin(['extension_bundle'], {
