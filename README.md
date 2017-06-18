@@ -1,4 +1,3 @@
-# StockTrendS
-Track and analyze your favorite stocks using your own algorithms or metrics, and also get alerts.
+# FeatureFinder
+:cyclone: Track and analyze your favorite cryptocoins as well as stocks using your own algorithms or metrics, and also get alerts.
 
-Link to [kanban](https://trello.com/b/9OE1FWre/development)
