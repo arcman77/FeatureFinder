@@ -110,3 +110,5 @@ DB.prototype.localRemoveItems = function(collection) {
     return this._localStorageQueryTemplate_(toBeDeleted, this.syncStorage.remove);
 };
 
+export default DB;
+

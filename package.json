@@ -1,15 +1,70 @@
 {
-  "name": "stocktrends",
-  "version": "1.0.0",
-  "description": "This npm package manages dev-dependencies for the $stockTrend$ chrome-extension project.",
-  "main": "popup.js",
+  "name": "FeatureFinder",
+  "description": "Track and analyze your favorite crypto coins as well as stocks using your own algorithms or metrics, and also get alerts.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-dev": "cross-env NODE_ENV=development && webpack --config build/webpack.dev.conf.js",
+    "build-dev-watch": "cross-env NODE_ENV=development webpack --config build/webpack.dev.conf.js --watch",
+    "build-prod": "cross-env NODE_ENV=production && webpack --config build/webpack.prod.conf.js",
+    "build-staging": "cross-env NODE_ENV=development && webpack --config build/webpack.prod.conf.js",
+    "karma": "./node_modules/karma/bin/karma",
+    "test": "cross-env NODE_ENV=development && karma start karma.conf.js --single-run",
+    "test-watch": "cross-env NODE_ENV=development && karma start karma.conf.js",
+    "lint": "./node_modules/.bin/eslint . --fix",
+    "validate": "npm ls"
+  },
+  "dependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.0.0",
+    "babel-preset-stage-2": "^6.0.0",
+    "babel-runtime": "^5.8.0",
+    "bencode": "^0.11.0",
+    "clean-webpack-plugin": "^0.1.15",
+    "cross-env": "^3.2.4",
+    "css-loader": "^0.26.1",
+    "d3": "^4.5.0",
+    "drag-drop": "^2.13.2",
+    "expose-loader": "^0.7.1",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.10.1",
+    "highcharts": "^5.0.12",
+    "html-webpack-plugin": "^2.28.0",
+    "jquery": "^3.1.1",
+    "json-loader": "^0.5.4",
+    "lodash": "^4.17.4",
+    "mime-types": "^2.1.14",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^4.1.1",
+    "socket.io": "^2.0.3",
+    "style-loader": "^0.13.1",
+    "vue": "latest",
+    "webpack": "^2.4.1",
+    "webpack-merge": "^2.6.1",
+    "zip-webpack-plugin": "^0.3.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "eslint": "^3.14.0",
     "eslint-config-airbnb-base": "^11.1.0",
-    "eslint-plugin-import": "^2.2.0"
+    "eslint-plugin-import": "^2.2.0",
+    "karma": "^1.5.0",
+    "karma-chai": "^0.1.0",
+    "karma-chai-as-promised": "^0.1.2",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-mocha": "^1.3.0",
+    "karma-webpack": "^2.0.2",
+    "mocha": "^3.2.0",
+    "precommit-hook": "latest"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcman7/FeatureFinder.git"
   },
   "author": "Andrew R Carpenter",
   "license": "MIT"

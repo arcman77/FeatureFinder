@@ -1,10 +1,8 @@
 vue.js
 ga.js
-dist/*
+extension_bundle/*
 test/*
-src/localization/lang/*
-utService.js
 *min.js
 bundle.js
-networkGraph.js
-Translatr.js
+src/misc/*
+storage.js

@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
 
-    "name": "$tockTrend$",
-    "description": "This extension will query stock data from google and yahoo finance and run user supplied algorithms against said data sets and display analysis of the results.",
+    "name": "FeatureFinder",
+    "description": "Track and analyze your favorite crypto coins as well as stocks using your own algorithms or metrics, and also get alerts.",
     "version": "1.0",
 
     "browser_action": {
@@ -13,11 +13,16 @@
         "activeTab",
         "https://ajax.googleapis.com/",
         "storage",
-        "unlimitedStorage"
+        "unlimitedStorage",
+        "https://bittrex.com/"
+    ],
+    "content_scripts": [
+        {
+            "js": ["/bundle.js", "/bundle.js.map"]
+        }
     ],
     "background": {
-        "page": "popup.html"
+        "page": "app.html"
     },
     "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
-
 }
