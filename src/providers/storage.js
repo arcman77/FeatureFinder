@@ -10,6 +10,26 @@
 
 /* eslint-disable no-underscore-dangle */
 
+//for web-dev fake chrome extension enviornment
+if (!chrome.extension) {
+    // eslint-disable-next-line no-unused-vars
+    chrome.extension = {
+        getBackgroundPage() {
+            return {
+                console() {
+                    //eslint-disable-next-line
+                    console.log(arguments);
+                }
+            };
+        }
+    };
+    chrome.storage = {
+        local: window.localStorage,
+        sync: window.localStorage
+    };
+}
+
+
 function DB() {
     var self = this;
     this.CHROME_SYNC_STORAGE_QUOTA = 102400; //BYTES
@@ -21,6 +41,9 @@ function DB() {
     });
     this.syncStorage.get(['_userFiles_'], (userFiles) => {
         self.userFiles = userFiles || {};
+    });
+    this.syncStorage.get(['_coinData_'], (coinData) => {
+        self.coinData = coinData || {};
     });
 }
 

@@ -6,4 +6,4 @@ npm-debug.log
 !.eslintignore
 !.eslintrc.js
 extension_bundle
-
+build/config.js

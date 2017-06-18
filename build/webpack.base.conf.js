@@ -52,7 +52,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue$': path.join('vue', 'dist', 'vue.common.js')
+            'vue$': path.join('vue', 'extension_bundle', 'vue.common.js')
         }
     },
     plugins: [
@@ -68,8 +68,8 @@ module.exports = {
         }),
         // Build html file, inject output files
         new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html',
+            filename: 'app.html',
+            template: 'app.html',
             inject: true
         }),
         //Sets variables based on config file
