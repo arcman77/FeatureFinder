@@ -3,6 +3,8 @@ import Vue from 'vue';
 import _ from 'lodash';
 // eslint-disable-next-line no-unused-vars
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
+import './stylesheets/app.scss';
+import './imgs/icon.png';
 import DB from './providers/storage';
 // eslint-disable-next-line no-unused-vars
 import GraphAPI from './providers/graphAPI';

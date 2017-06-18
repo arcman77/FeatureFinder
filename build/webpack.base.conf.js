@@ -47,10 +47,11 @@ module.exports = {
             {
                 test: /\.(jpe?g|png|gif|svg|ico)$/,
                 use: 'file-loader?name=imgs/[name].[ext]'
-            }, {
-                test: /icon/,
+            },
+            {
+                test: /icon\.png$/,
                 use: 'file-loader?name=[name].[ext]'
-            }
+            },
         ]
     },
     resolve: {
@@ -66,7 +67,7 @@ module.exports = {
         }),
         // Extract css into separate file
         new ExtractTextPlugin({
-            filename: 'styles.css',
+            filename: 'app.css',
             allChunks: true,
         }),
         // Build html file, inject output files

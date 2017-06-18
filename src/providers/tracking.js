@@ -3,7 +3,6 @@ import GA from './trackers/GA';
 class Tracking {
     constructor(config) {
         this.GA = new GA(config);
-        // TODO: add bench tracker
     }
     send(options) {
         var gaTrackers = this.GA.getAllTrackers();
