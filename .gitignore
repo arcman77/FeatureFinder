@@ -5,5 +5,5 @@ npm-debug.log
 !.gitignore
 !.eslintignore
 !.eslintrc.js
-
-
+extension_bundle
+build/GA_PRODUCT_CODE.js
