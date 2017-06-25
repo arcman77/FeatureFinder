@@ -53,7 +53,7 @@ module.exports = {
                 use: 'file-loader?name=imgs/[name].[ext]'
             },
             {
-                test: /'manifest\.json'$/,
+                test: /manifest\.json$/,
                 use: 'file-loader?name=[name].[ext]'
             }
         ]
