@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+
+    "name": "FeatureFinder",
+    "description": "Track and analyze your favorite crypto coins as well as stocks using your own algorithms or metrics, and also get alerts.",
+    "version": "1.0",
+
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "https://ajax.googleapis.com/",
+        "storage",
+        "unlimitedStorage",
+        "https://bittrex.com/"
+    ],
+    "content_scripts": [
+        {
+            "js": ["/bundle.js", "/bundle.js.map"]
+        }
+    ],
+    "background": {
+        "page": "app.html"
+    },
+    "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+}

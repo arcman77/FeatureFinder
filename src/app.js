@@ -1,10 +1,12 @@
 import Vue from 'vue';
 // eslint-disable-next-line no-unused-vars
 import _ from 'lodash';
-// eslint-disable-next-line no-unused-vars
-import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
 import './stylesheets/app.scss';
 import './imgs/icon.png';
+import '../manifest.json';
+// eslint-disable-next-line no-unused-vars
+import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
+import Tracking from './providers/tracking';
 import DB from './providers/storage';
 // eslint-disable-next-line no-unused-vars
 import GraphAPI from './providers/graphAPI';
@@ -12,7 +14,6 @@ import GraphAPI from './providers/graphAPI';
 /* eslint-disable no-undef */
 Vue.prototype.$bus = new Vue();
 Vue.prototype.$dev = (DEV === 'true');
-Vue.prototype.$Localize = Localize;
 Vue.prototype.$Tracking = new Tracking({
     appName: APP_NAME,
     appId: APP_ID,

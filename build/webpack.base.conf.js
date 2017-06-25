@@ -45,13 +45,17 @@ module.exports = {
                 use: 'file-loader?name=fonts/[name].[ext]'
             },
             {
+                test: /icon\.png$/,
+                use: 'file-loader?name=[name].[ext]'
+            },
+            {
                 test: /\.(jpe?g|png|gif|svg|ico)$/,
                 use: 'file-loader?name=imgs/[name].[ext]'
             },
             {
-                test: /icon\.png$/,
+                test: /'manifest\.json'$/,
                 use: 'file-loader?name=[name].[ext]'
-            },
+            }
         ]
     },
     resolve: {
@@ -76,6 +80,11 @@ module.exports = {
             template: 'app.html',
             inject: true
         }),
+        // new ExtractTextPlugin({
+        //     filename: 'manifest.json',
+        //     template: 'manifest.json',
+        //     allChunks: true
+        // }),
         //Sets variables based on config file
         new webpack.DefinePlugin({
             APP_NAME: config.APP_NAME,
