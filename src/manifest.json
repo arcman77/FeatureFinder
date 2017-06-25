@@ -16,11 +16,11 @@
         "unlimitedStorage",
         "https://bittrex.com/"
     ],
-    "content_scripts": [
-        {
-            "js": ["./bundle.js", "./bundle.js.map"]
-        }
-    ],
+    // "content_scripts": [
+    //     {
+    //         "js": ["./bundle.js", "./bundle.js.map"]
+    //     }
+    // ],
     "background": {
         "page": "app.html"
     },
