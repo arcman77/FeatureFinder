@@ -18,7 +18,7 @@
     ],
     "content_scripts": [
         {
-            "js": ["/bundle.js", "/bundle.js.map"]
+            "js": ["./bundle.js", "./bundle.js.map"]
         }
     ],
     "background": {

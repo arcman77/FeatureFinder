@@ -3,7 +3,7 @@ import Vue from 'vue';
 import _ from 'lodash';
 import './stylesheets/app.scss';
 import './imgs/icon.png';
-import '../manifest.json';
+import './manifest.json';
 // eslint-disable-next-line no-unused-vars
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
 import Tracking from './providers/tracking';
