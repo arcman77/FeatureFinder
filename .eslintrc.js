@@ -1,9 +1,11 @@
 module.exports = {
     "extends": "airbnb-base",
     "plugins": [
-        "import"
+        "import",
+        "vue"
     ],
     "rules": {
+        "vue/jsx-uses-vars": 2,
         "comma-dangle": 0,
         "valid-jsdoc": 0,
         "eqeqeq": 0,
@@ -22,7 +24,8 @@ module.exports = {
         "quote-props": 0,
         "consistent-return": 0,
         "guard-for-in": 0,
-        "no-plusplus": 0
+        "no-plusplus": 0,
+        "no-new": 0
     },
     "env": {
         "browser": true,

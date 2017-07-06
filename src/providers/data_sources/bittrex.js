@@ -4,6 +4,8 @@ class Bittrex {
         this.name = 'bittrex';
         this.baseUrl = 'https://bittrex.com';
         this.apiPrefix = '/Api/v2.0/pub/market/GetTicks?';
+        // https://bittrex.com/Api/v2.0/pub/market/GetTicks?marketName=BTC-ETH&tickInterval=thirtyMin&_=1496809444398
+        // https://bittrex.com/Api/v2.0/pub/market/GetTicks?marketName=BTC-ETH&tickInterval=oneMin&_=1496809444398
         this.actions = {
             'set-market-name': '&marketName=',
             'set-tick-interval': '&tickInterval='

@@ -1,6 +1,6 @@
 /** chrome storage
  * All queries return promises
- * All insertions return promises
+ * All insertions return promises unless otherwise stated
  * Promises will comply with the A+ standard. See http://2ality.com/2014/10/es6-promises-api.html for more info.
  * The following code provides:
  *  1. A wrapper to the extension storage api. See https://developer.chrome.com/extensions/storage for more info.
@@ -10,47 +10,37 @@
 
 /* eslint-disable no-underscore-dangle */
 
-//for web-dev fake chrome extension enviornment
-if (!chrome.extension) {
-    // eslint-disable-next-line no-unused-vars
-    chrome.extension = {
-        getBackgroundPage() {
-            return {
-                console() {
-                    //eslint-disable-next-line
-                    console.log(arguments);
-                }
-            };
-        }
-    };
-    chrome.storage = {
-        local: window.localStorage,
-        sync: window.localStorage
-    };
-}
-
-
 function DB() {
     var self = this;
     this.CHROME_SYNC_STORAGE_QUOTA = 102400; //BYTES
     this.storage = chrome.storage;
     this.localStorage = this.storage.local;
     this.syncStorage = this.storage.sync;
-    this.syncStorage.get(['_stockData_'], (stockData) => {
-        self.stockData = stockData || {};
-    });
+    this.$console = chrome.extension.getBackgroundPage().console;
+
+    // this.syncStorage.get(['_stockData_'], (stockData) => {
+    //     self.stockData = stockData || {};
+    // });
+
+    // this.syncStorage.get(['_coinData_'], (coinData) => {
+    //     self.coinData = coinData || {};
+    //     //unwrap
+    //     self.coinData = coinData['_coinData_'];
+    // });
     this.syncStorage.get(['_userFiles_'], (userFiles) => {
         self.userFiles = userFiles || {};
-    });
-    this.syncStorage.get(['_coinData_'], (coinData) => {
-        self.coinData = coinData || {};
     });
 }
 
 DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
+    const self = this;
     return new Promise((resolve, reject) => {
         try {
             asyncFunc(args, (results) => {
+                // self.$console.log('in asyncFunc callback')
+                // self.$console.log('args: \n', args)
+                // self.$console.log('asyncFunc: \n', asyncFunc)
+                // self.$console.log('results: \n', results)
                 resolve(results);
             });
         } catch (err) {
@@ -60,6 +50,7 @@ DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
 };
 
 DB.prototype.syncGetItem = function(key) {
+    this.$console.log('get')
     return this._syncStorageQueryTemplate_(key, this.syncStorage.get);
 };
 
@@ -75,7 +66,8 @@ DB.prototype.syncGetAll = function() {
 */
 
 DB.prototype.syncSetItem = function(dictionary) {
-    return this._chromeStorageQueryTemplate_(dictionary, this.syncStorage.set);
+    this.$console.log('set')
+    return this._syncStorageQueryTemplate_(dictionary, this.syncStorage.set);
 };
 
 DB.prototype.syncSetItems = DB.prototype.syncSetItem;
@@ -131,6 +123,21 @@ DB.prototype.localRemoveItems = function(collection) {
     }
 
     return this._localStorageQueryTemplate_(toBeDeleted, this.syncStorage.remove);
+};
+
+DB.prototype.getBytesInUse = function(area) {
+    if (area !== 'local' && area !== 'sync') {
+        console.error(`getBytesInUse called with invalid area: "${area}"`);
+        return null;
+    }
+    const templateName = `_${area}StorageQueryTemplate_`;
+    const template = this[templateName];
+    return template(null, this.storage[area].getBytesInUse);
+};
+
+// non-promise return value, return value is integer
+DB.prototype.getStorageQuota = function(area) {
+    return this.storage[area].QUOTA_BYTES;
 };
 
 export default DB;

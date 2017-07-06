@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var config = require('./config');
 
 module.exports = {
-    entry: ['babel-polyfill', path.resolve('src', 'app.js')],
+    entry: ['babel-polyfill', path.resolve('src', 'main.js')],
     output: {
         path: path.resolve('extension_bundle'),
         filename: 'bundle.js'
@@ -41,6 +41,17 @@ module.exports = {
                 })
             },
             {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    loaders: {
+                        scss: ExtractTextPlugin.extract({
+                            use: ['css-loader', 'sass-loader']
+                        })
+                    }
+                }
+            },
+            {
                 test: /\.(eot|ttf|woff|woff2)$/,
                 use: 'file-loader?name=fonts/[name].[ext]'
             },
@@ -60,7 +71,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue$': path.join('vue', 'dist', 'vue.common.js')
+            'vue$': path.join('vue', 'dist', 'vue.runtime.common.js')
         }
     },
     plugins: [
