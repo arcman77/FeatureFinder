@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var config = require('./config');
 
 module.exports = {
-    entry: ['babel-polyfill', path.resolve('src', 'app.js')],
+    entry: ['babel-polyfill', path.resolve('src', 'main.js')],
     output: {
         path: path.resolve('extension_bundle'),
         filename: 'bundle.js'
@@ -41,12 +41,19 @@ module.exports = {
                 })
             },
             {
-                test: /\.(eot|ttf|woff|woff2)$/,
-                use: 'file-loader?name=fonts/[name].[ext]'
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    loaders: {
+                        scss: ExtractTextPlugin.extract({
+                            use: ['css-loader', 'sass-loader']
+                        })
+                    }
+                }
             },
             {
-                test: /icon\.png$/,
-                use: 'file-loader?name=[name].[ext]'
+                test: /\.(eot|ttf|woff|woff2)$/,
+                use: 'file-loader?name=fonts/[name].[ext]'
             },
             {
                 test: /\.(jpe?g|png|gif|svg|ico)$/,
@@ -55,12 +62,16 @@ module.exports = {
             {
                 test: /manifest\.json$/,
                 use: 'file-loader?name=[name].[ext]'
-            }
+            },
+            {
+                test: /icon\.png$/,
+                use: 'file-loader?name=[name].[ext]'
+            },
         ]
     },
     resolve: {
         alias: {
-            'vue$': path.join('vue', 'dist', 'vue.common.js')
+            'vue$': path.join('vue', 'dist', 'vue.runtime.common.js')
         }
     },
     plugins: [
@@ -80,11 +91,6 @@ module.exports = {
             template: 'app.html',
             inject: true
         }),
-        // new ExtractTextPlugin({
-        //     filename: 'manifest.json',
-        //     template: 'manifest.json',
-        //     allChunks: true
-        // }),
         //Sets variables based on config file
         new webpack.DefinePlugin({
             APP_NAME: config.APP_NAME,
