@@ -26,6 +26,7 @@
     </div>
 </template>
 <script type="text/javascript">
+
 import CryptoCoinDataAPI from '../providers/cryptoCoinDataAPI';
 
 const ManageMemory = {
@@ -37,7 +38,8 @@ const ManageMemory = {
             syncBytesInUse: 0,
             localBytesInUse: 0,
             syncBytesQuota: CryptoCoinDataAPI.getStorageQuota('sync'),
-            localBytesQuota: CryptoCoinDataAPI.getStorageQuota('local')
+            localBytesQuota: CryptoCoinDataAPI.getStorageQuota('local'),
+            servedData: CryptoCoinDataAPI.servedData
         };
     },
     methods: {
@@ -46,6 +48,7 @@ const ManageMemory = {
             CryptoCoinDataAPI.clearSyncCoinData().then((/*success*/) => {
                 self.$emit('clearSyncCoinData');
                 self.$console.log('clear sync storage success');
+                self.getSyncBytesInUse();
             });
         },
         clearLocalCoinData() {
@@ -53,6 +56,7 @@ const ManageMemory = {
             CryptoCoinDataAPI.clearLocalCoinData().then((/*success*/) => {
                 self.$emit('clearLocalCoinData');
                 self.$console.log('clear local storage success');
+                self.getLocalBytesInUse();
             });
         },
         getSyncBytesInUse() {
@@ -66,6 +70,10 @@ const ManageMemory = {
             CryptoCoinDataAPI.getBytesInUse('local').then((bytes) => {
                 self.localBytesInUse = bytes;
             });
+        },
+        updateBytesInUse() {
+            this.syncBytesInUse = this.servedData.syncBytesInUse;
+            this.localBytesInUse = this.servedData.localBytesInUse;
         }
     },
     computed: {
@@ -74,6 +82,15 @@ const ManageMemory = {
         },
         localBytesQuotaPercentage() {
             return ((this.localBytesInUse / this.localBytesQuota) * 100).toFixed(2);
+        }
+    },
+    watch: {
+        servedData: {
+            handler() {
+                this.updateBytesInUse();
+            },
+            deep: true,
+            immediate: true
         }
     },
     created() {
@@ -89,7 +106,7 @@ export default ManageMemory;
     #manage-memory {
         color: white;
         background-color: #222222;
-        padding: 5px;
+        padding: 10px;
         border-radius: 3px;
         line-height: 14px;
         font-size: 14px;

@@ -9,9 +9,15 @@ class CryptoCoinDataAPI {
     constructor(db) {
         this.DB = db;
         this.storageKey = '_coinData_';
-        this.selectedCoinsKey = '_selectedCoins_';
-        this.priceDataKey = '_priceData_';
+        this.selectedCoinsKey = 'selectedCoins';
+        this.priceDataKey = 'priceData';
         this.$console = chrome.extension.getBackgroundPage().console;
+        this.servedData = {
+            selectedCoins: [],
+            priceData: {},
+            localBytesInUse: 0,
+            syncBytesInUse: 0
+        };
         this.providers = {
             bittrex: new Bittrex(),
             coinMarketCap: new CoinMarketCap(),
@@ -28,31 +34,31 @@ class CryptoCoinDataAPI {
         this.generalCoinInfo = {
             'BTC': {
                 name: 'Bitcoin',
-                hompage: 'https://bitcoin.org/en/'
+                homepage: 'https://bitcoin.org/en/'
             },
             'ETH': {
                 name: 'Ethereum',
-                hompage: 'https://www.ethereum.org/'
+                homepage: 'https://www.ethereum.org/'
             },
             'XRP': {
                 name: 'Ripple',
-                hompage: 'https://ripple.com/'
+                homepage: 'https://ripple.com/'
             },
             'LTC': {
                 name: 'Litecoin',
-                hompage: 'https://litecoin.com/'
+                homepage: 'https://litecoin.com/'
             },
             'ETC': {
                 name: 'Ethereum Classic',
-                homepage: 'https://ethereumclassic.github.io/'
+                homeepage: 'https://ethereumclassic.github.io/'
             },
             'XEM': {
                 name: 'NEM',
-                hompage: 'https://www.nem.io/'
+                homepage: 'https://www.nem.io/'
             },
             'DASH': {
                 name: 'Dash',
-                hompage: 'https://www.dash.org/'
+                homepage: 'https://www.dash.org/'
             },
             'MIOTA': {
                 name: 'IOTA',
@@ -60,39 +66,49 @@ class CryptoCoinDataAPI {
             }
         };
         this.generalCoinInfoFillIn();
+        this.watchSyncStorage();
     }
 
-    setCoinStorageData(area, storageObject) {
+    setCoinStorageData(area, storageObject, isUpdateEvent) {
         if (area !== 'sync' && area !== 'local') {
             this.$console.error(`Calling setCoinStorageData with invalid storage area: "${area}"`);
             return null;
         }
         const propertyName = `${area}CoinData`;
-        this[propertyName] = storageObject || {};
-        // unwrap
-        this[propertyName] = this[propertyName][this.storageKey] || {};
-        if (area === 'sync') {
-            //eslint-disable-next-line max-len
-            this[propertyName][this.selectedCoinsKey] = this[propertyName][this.selectedCoinsKey] || [];
-            this.selectedCoins = this[propertyName][this.selectedCoinsKey];
+        // this.$console.log(area, storageObject, isUpdateEvent)
+        if (isUpdateEvent) {
+            let key;
+            //eslint-disable-next-line no-restricted-syntax
+            for (key in storageObject) {
+                this[propertyName][key] = storageObject[key];
+                this.servedData[key] = storageObject[key];
+            }
         } else {
-            this[propertyName][self.priceDataKey] = this[propertyName][self.priceDataKey] || {};
-            self.priceData = this[propertyName][self.priceDataKey];
+            this[propertyName] = storageObject || {};
+            // unwrap
+            this[propertyName] = this[propertyName][this.storageKey] || {};
+            if (area === 'sync') {
+                //eslint-disable-next-line max-len
+                this[propertyName][this.selectedCoinsKey] = this[propertyName][this.selectedCoinsKey] || [];
+                this.servedData.selectedCoins = this[propertyName][this.selectedCoinsKey];
+            } else {
+                this[propertyName][this.priceDataKey] = this[propertyName][this.priceDataKey] || {};
+                this.servedData.priceData = this[propertyName][this.priceDataKey];
+            }
         }
+        const self = this;
+        this.getBytesInUse(area).then((bytes) => {
+            self.servedData[`${area}BytesInUse`] = bytes;
+        });
     }
 
     watchSyncStorage() {
-        this.selectedCoinsKey = '_selectedCoins_';
-        this.priceDataKey = '_priceData_';
-        const self = this;
+        const selff = this;
         chrome.storage.onChanged.addListener((changes, area) => {
-            if (area == 'sync' && self.storageKey in changes) {
-                self.setCoinStorageData('sync', changes);
+            // selff.$console.log('storage changed happened', changes, area)
+            if ((area == 'sync' || area === 'local') && selff.storageKey in changes) {
+                selff.setCoinStorageData(area, changes[selff.storageKey].newValue, true);
             }
-            if (area === 'local' && self.storageKey in changes) {
-                self.setCoinStorageData('local', changes);
-            }
-            self.$console.log(self);
         });
     }
 
@@ -107,7 +123,7 @@ class CryptoCoinDataAPI {
             if (!this.generalCoinInfo[symbol]) {
                 this.generalCoinInfo[symbol] = {
                     name: offlineInfo[index].name,
-                    hompage: null
+                    homepage: null
                 };
             }
         }
@@ -133,7 +149,7 @@ class CryptoCoinDataAPI {
     }
 
     clearSyncCoinData() {
-        this.$console.log('in clearSyncCoinData');
+        // this.$console.log('in clearSyncCoinData');
         const dict = {};
         dict[this.storageKey] = {};
         dict[this.storageKey][this.selectedCoinsKey] = [];
@@ -148,19 +164,19 @@ class CryptoCoinDataAPI {
     }
 
     addUserCoin(coinSymbol) {
-        this.selectedCoins.push(coinSymbol);
+        this.syncCoinData[this.selectedCoinsKey].push(coinSymbol);
         return this.saveSyncCoinData();
     }
 
     removeCoin(symbol) {
         var index = this.selectedCoins.indexOf(symbol);
-        this.selectedCoins.splice(index);
-        delete this.priceData[symbol];
-        return this.saveSyncCoinData();
+        this.syncCoinData[this.selectedCoinsKey].splice(index);
+        delete this.localCoinData[this.priceDataKey][symbol];
+        return [this.saveSyncCoinData(), this.saveLocalCoinData()];
     }
 
     getSelectedCoins() {
-        return this.selectedCoins;
+        return this.syncCoinData[this.selectedCoinsKey];
     }
 
     getBytesInUse(area) {
@@ -173,8 +189,9 @@ class CryptoCoinDataAPI {
 
     scrapeHomepageUrl(coinSymbol) {
         const name = this.generalCoinInfo[coinSymbol];
-        var self = this;
+        const self = this;
         this.coinMarketCap.getCoinHomepage(name).then((homepage) => {
+            self.$console.log('in get coin homepage');
             if (homepage) {
                 self.generalCoinInfo[coinSymbol].homepage = homepage;
                 return new Promise((resolve) => {

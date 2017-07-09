@@ -6,23 +6,31 @@
             placeholder="ETH"
             autocomplete="on" 
             v-model="coinSymobol">
-        <button class="button-submit-coin" @click="addCoin">GO</button>
-        <div id="selected-coins-container">
-            <coin v-for="coin in selectedCoins" key="coin"></coin>
+        <button class="button-submit-coin"
+            @click="addCoin"
+            @mousedown="showAlert"
+            @mouseup="showAlert">
+                GO
+        </button>
+        <div id="alert-already-added" v-show="showAlert">COIN ALREADY ADDED</div>
+        <div id="selected-coins-container" v-show="selectedCoins.length > 0">
+            <coin v-for="coin in selectedCoins" :key="coin" :symbol="coin"></coin>
         </div>
     </div>
 </template>
 
-<script type="text/javascript">
+<script>
+
 import CryptoCoinDataAPI from '../providers/cryptoCoinDataAPI';
 import Coin from './coin.vue';
 
 const SelectCoin = {
     data() {
         return {
-            coinSymobol: 'ETH',
-            selectedCoins: CryptoCoinDataAPI.getSelectedCoins() || []
-            // selectedCoins: []
+            coinSymobol: '',
+            selectedCoins: CryptoCoinDataAPI.servedData.selectedCoins,
+            servedData: CryptoCoinDataAPI.servedData,
+            showAlert: false
         };
     },
     components: {
@@ -31,20 +39,16 @@ const SelectCoin = {
     methods: {
         addCoin() {
             var coinSymobol = this.coinSymobol;
-            this.$console.log('coin: ', coinSymobol);
-            if (!coinSymobol) {
+            if (!coinSymobol || this.selectedCoins.indexOf(coinSymobol) > -1) {
+                this.$console.log('already added');
                 return;
             }
-            this.$console.log(CryptoCoinDataAPI, CryptoCoinDataAPI.hasCoin(coinSymobol));
             if (CryptoCoinDataAPI.hasCoin(coinSymobol)) {
                 CryptoCoinDataAPI.addUserCoin(coinSymobol);
-                this.selectedCoins.push(coinSymobol);
-                this.updateSelectedCoins();
-                const self = this;
+                // const self = this;
                 CryptoCoinDataAPI.scrapeHomepageUrl(coinSymobol).then((successStatus) => {
                     if (successStatus) {
                         // self.$console.log('good successStatus', successStatus)
-                        self.updateSelectedCoins();
                         // self.$console.log(self.selectedCoins)
                     } else {
                         // self.$console.log('bad successStatus: ')
@@ -56,11 +60,24 @@ const SelectCoin = {
             }
         },
         updateSelectedCoins() {
-            // this.$console.log('in updateSelectedCoins: ')
-            // this.$console.log(this.selectedCoins)
-            this.selectedCoins = CryptoCoinDataAPI.getSelectedCoins() || this.selectedCoins;
-            // this.$console.log('in updateSelectedCoins: ')
-            // this.$console.log(this.selectedCoins)
+            this.selectedCoins = this.servedData.selectedCoins;
+        },
+        showAlert() {
+            //doesn't work
+            //TODO: FIX
+            // this.$console.log('showAlert')
+            if (this.selectedCoins.indexOf(this.coinSymobol) > -1) {
+                this.showAlert = !this.showAlert;
+            }
+        }
+    },
+    watch: {
+        servedData: {
+            handler() {
+                this.updateSelectedCoins();
+            },
+            deep: true,
+            immediate: true
         }
     },
     created() {
@@ -84,6 +101,25 @@ $grey-ml: #B3B3B3;
         background-color: green;
     }
 }
+#selected-coins-container {
+    background-color: $grey-dark;
+    // display: inline-flex; 
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 10px;
+    // justify-content: center;
+}
+#alert-already-added {
+    border: 2px solid red;
+    padding: 5px;
+    color: white;
+    background-color: red;
+    font-weight: 200;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: 12px;
+    display: inline-block;
+}
 .selected-coin {
     background-color: $grey-dark;
     display: inline-flex;
@@ -94,17 +130,5 @@ $grey-ml: #B3B3B3;
     font-size: 14px;
     align-items: center;
     height: 32px;
-    .coin-name {
-        margin-left: 5px;
-        min-width: 64px;
-    }
-    .coin-symbol, a {
-        color: $grey-ml;
-    }
-    .homepage {
-        text-decoration: underline;
-        margin-left: 25px;
-        margin-right: 10px;
-    }
 }
 </style>
