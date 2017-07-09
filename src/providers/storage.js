@@ -17,16 +17,6 @@ function DB() {
     this.localStorage = this.storage.local;
     this.syncStorage = this.storage.sync;
     this.$console = chrome.extension.getBackgroundPage().console;
-
-    // this.syncStorage.get(['_stockData_'], (stockData) => {
-    //     self.stockData = stockData || {};
-    // });
-
-    // this.syncStorage.get(['_coinData_'], (coinData) => {
-    //     self.coinData = coinData || {};
-    //     //unwrap
-    //     self.coinData = coinData['_coinData_'];
-    // });
     this.syncStorage.get(['_userFiles_'], (userFiles) => {
         self.userFiles = userFiles || {};
     });
