@@ -6,7 +6,13 @@
             placeholder="ETH"
             autocomplete="on" 
             v-model="coinSymobol">
-        <button class="button-submit-coin" @click="addCoin">GO</button>
+        <button class="button-submit-coin"
+            @click="addCoin"
+            @mousedown="showAlert"
+            @mouseup="showAlert">
+                GO
+        </button>
+        <div id="alert-already-added" v-show="showAlert">COIN ALREADY ADDED</div>
         <div id="selected-coins-container" v-show="selectedCoins.length > 0">
             <coin v-for="coin in selectedCoins" :key="coin" :symbol="coin"></coin>
         </div>
@@ -21,9 +27,10 @@ import Coin from './coin.vue';
 const SelectCoin = {
     data() {
         return {
-            coinSymobol: 'ETH',
+            coinSymobol: '',
             selectedCoins: CryptoCoinDataAPI.servedData.selectedCoins,
-            servedData: CryptoCoinDataAPI.servedData
+            servedData: CryptoCoinDataAPI.servedData,
+            showAlert: false
         };
     },
     components: {
@@ -38,13 +45,10 @@ const SelectCoin = {
             }
             if (CryptoCoinDataAPI.hasCoin(coinSymobol)) {
                 CryptoCoinDataAPI.addUserCoin(coinSymobol);
-                // this.selectedCoins.push(coinSymobol);
-                // this.updateSelectedCoins();
-                const self = this;
+                // const self = this;
                 CryptoCoinDataAPI.scrapeHomepageUrl(coinSymobol).then((successStatus) => {
                     if (successStatus) {
                         // self.$console.log('good successStatus', successStatus)
-                        self.updateSelectedCoins();
                         // self.$console.log(self.selectedCoins)
                     } else {
                         // self.$console.log('bad successStatus: ')
@@ -57,6 +61,14 @@ const SelectCoin = {
         },
         updateSelectedCoins() {
             this.selectedCoins = this.servedData.selectedCoins;
+        },
+        showAlert() {
+            //doesn't work
+            //TODO: FIX
+            // this.$console.log('showAlert')
+            if (this.selectedCoins.indexOf(this.coinSymobol) > -1) {
+                this.showAlert = !this.showAlert;
+            }
         }
     },
     watch: {
@@ -96,7 +108,17 @@ $grey-ml: #B3B3B3;
     margin-top: 10px;
     padding: 10px;
     // justify-content: center;
-
+}
+#alert-already-added {
+    border: 2px solid red;
+    padding: 5px;
+    color: white;
+    background-color: red;
+    font-weight: 200;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: 12px;
+    display: inline-block;
 }
 .selected-coin {
     background-color: $grey-dark;
