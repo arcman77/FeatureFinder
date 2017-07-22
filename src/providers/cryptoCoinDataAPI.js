@@ -67,6 +67,22 @@ class CryptoCoinDataAPI {
         };
         this.generalCoinInfoFillIn();
         this.watchSyncStorage();
+        this.fetch = {
+            historic: {
+                //returns Ajax Promise
+                priceData(symbol, minuteInterval) {
+                    const req = self.providers.bittrex.getMinuteTicksData(symbol, minuteInterval);
+                    req.then((response) => {
+                        self.$console.log(response);
+                        //{"success":true,"message":"","result":[{"O":0.13350000,
+                        if (response.success && response.result) {
+                            self.saveLocalCoinPriceData(symbol, response.result);
+                        }
+                        return response;
+                    });
+                }
+            }
+        };
     }
 
     setCoinStorageData(area, storageObject, isUpdateEvent) {
@@ -103,6 +119,7 @@ class CryptoCoinDataAPI {
     }
 
     watchSyncStorage() {
+        // TODO: invesitgate why var name 'self' can't be used in chrome callbacks
         const selff = this;
         chrome.storage.onChanged.addListener((changes, area) => {
             // selff.$console.log('storage changed happened', changes, area)
@@ -136,8 +153,6 @@ class CryptoCoinDataAPI {
     saveSyncCoinData() {
         const dict = {};
         dict[this.storageKey] = this.syncCoinData;
-        //sync storage takes key vale pairs
-        this.$console.log('inside saveCoinData: ');
         this.$console.log(dict);
         return this.DB.syncSetItem(dict);
     }
@@ -146,6 +161,11 @@ class CryptoCoinDataAPI {
         const dict = {};
         dict[this.storageKey] = this.localCoinData;
         return this.DB.localSetItem(dict);
+    }
+
+    saveLocalCoinPriceData(coinSymbol, data) {
+        this.localCoinData[this.priceDataKey][coinSymbol] = data;
+        this.saveLocalCoinData();
     }
 
     clearSyncCoinData() {
@@ -185,6 +205,18 @@ class CryptoCoinDataAPI {
 
     getStorageQuota(area) {
         return this.DB.getStorageQuota(area);
+    }
+
+    getLocalCoinData() {
+        return this.localCoinData;
+    }
+
+    getLocalCoinPriceData() {
+        return this.localCoinData[this.priceDataKey];
+    }
+
+    getLocalCoinPriceSymbolData(symbol) {
+        return this.localCoinData[this.priceDataKey][symbol];
     }
 
     scrapeHomepageUrl(coinSymbol) {

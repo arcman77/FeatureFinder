@@ -10,6 +10,9 @@
             <div class="homepage">
                 {{homepage}}
             </div>
+            <div class="load-data"
+                :style="{ color: dataLoadedColor}">
+            </div>
         </div>
     </div>
 </template>
@@ -22,7 +25,9 @@ const Coin = {
     data() {
         return {
             name: '',
-            homepage: ''
+            homepage: '',
+            tickData: [],
+            loadedTickData: {}
         };
     },
     methods: {
@@ -33,9 +38,28 @@ const Coin = {
         setHomepage() {
             const info = CryptoCoinDataAPI.generalCoinInfo[this.symbol];
             this.homepage = info ? info.homepage : null;
+        },
+        fetchLoadedData(coinSymbol, minuteInterval) {
+            const self = this;
+            const req = CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval);
+            req.then((data) => {
+                self.tickData = data;
+            });
+        }
+    },
+    computed: {
+        dataLoadedColor() {
+            const len = this.tickData.length;
+            if (len > 300) {
+                return 'green';
+            } else if (len > 200) {
+                return 'yellow';
+            }
+            return 'red';
         }
     },
     created() {
+        // this.fetchLoadedData('ETH', 1);
         this.setName();
         this.setHomepage();
     }
@@ -71,6 +95,10 @@ $grey-ml: #B3B3B3;
         margin-left: 25px;
         margin-right: 10px;
         display: inline-block;
+    }
+    .load-data {
+        border-radius: 50%;
+        width: 15px;
     }
 }
 
