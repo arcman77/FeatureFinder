@@ -115,7 +115,7 @@ class Bittrex {
     }
 
     getMinuteTicksData(coinSymbol, tickInterval) {
-        this.$console.log('inside get minute tick data')
+        this.$console.log('inside get minute tick data');
         return $.ajax({
             url: this.getMinuteTicksUrl(coinSymbol, tickInterval),
             method: 'GET'
