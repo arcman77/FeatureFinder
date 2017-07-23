@@ -13,8 +13,10 @@ class Bittrex {
         };
         this.ticks = {
             1: 'oneMin',
+            5: 'fiveMin',
             30: 'thirtyMin',
-            60: 'sixtyMin'
+            60: 'hour',
+            1440: 'day'
         };
         this.baseCurrency = 'BTC';
         this.markets = {
@@ -95,7 +97,7 @@ class Bittrex {
 
     setTicks(coinSymbol, interval) {
         //https://bittrex.com/Api/v2.0/pub/market/GetTicks?marketName=BTC-ETH&tickInterval=oneMin&_=1496809444398
-        return `${this.setMarket(this.baseCurrency, coinSymbol)}${this.getAction['set-tick-interval']}${interval}`;
+        return `${this.setMarket(this.baseCurrency, coinSymbol)}${this.getAction('set-tick-interval')}${interval}`;
     }
 
     getMinuteTicksUrl(coinSymbol, tickInterval) {
@@ -106,12 +108,20 @@ class Bittrex {
         return this.setTicks(coinSymbol, this.getTicks(1));
     }
 
+    get5MinuteTicksUrl(coinSymbol) {
+        return this.setTicks(coinSymbol, this.getTicks(5));
+    }
+
     get30MinuteTicksUrl(coinSymbol) {
         return this.setTicks(coinSymbol, this.getTicks(30));
     }
 
     get60MinuteTicksUrl(coinSymbol) {
         return this.setTicks(coinSymbol, this.getTicks(60));
+    }
+
+    get1DayTicksUrl(coinSymbol) {
+        return this.setTicks(coinSymbol, this.getTicks(1440));
     }
 
     getMinuteTicksData(coinSymbol, tickInterval) {
@@ -129,6 +139,13 @@ class Bittrex {
         });
     }
 
+    get5MinuteTicksData(coinSymbol) {
+        return $.ajax({
+            url: this.get5MinuteTicksUrl(coinSymbol),
+            method: 'GET'
+        });
+    }
+
     get30MinuteTicksData(coinSymbol) {
         return $.ajax({
             url: this.get30MinuteTicksUrl(coinSymbol),
@@ -139,6 +156,13 @@ class Bittrex {
     get60MinuteTicksData(coinSymbol) {
         return $.ajax({
             url: this.get60MinuteTicksUrl(coinSymbol),
+            method: 'GET'
+        });
+    }
+
+    get1DayTicksData(coinSymbol) {
+        return $.ajax({
+            url: this.get1MinuteTicksUrl(coinSymbol),
             method: 'GET'
         });
     }

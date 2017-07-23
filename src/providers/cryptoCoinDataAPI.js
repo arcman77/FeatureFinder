@@ -73,13 +73,14 @@ class CryptoCoinDataAPI {
                 priceData(symbol, minuteInterval) {
                     const req = self.providers.bittrex.getMinuteTicksData(symbol, minuteInterval);
                     req.then((response) => {
-                        self.$console.log(response);
                         //{"success":true,"message":"","result":[{"O":0.13350000,
                         if (response.success && response.result) {
                             self.saveLocalCoinPriceData(symbol, response.result);
                         }
                         return response;
                     });
+
+                    return req;
                 }
             }
         };
@@ -91,7 +92,6 @@ class CryptoCoinDataAPI {
             return null;
         }
         const propertyName = `${area}CoinData`;
-        // this.$console.log(area, storageObject, isUpdateEvent)
         if (isUpdateEvent) {
             let key;
             //eslint-disable-next-line no-restricted-syntax
@@ -103,6 +103,7 @@ class CryptoCoinDataAPI {
             this[propertyName] = storageObject || {};
             // unwrap
             this[propertyName] = this[propertyName][this.storageKey] || {};
+
             if (area === 'sync') {
                 //eslint-disable-next-line max-len
                 this[propertyName][this.selectedCoinsKey] = this[propertyName][this.selectedCoinsKey] || [];
@@ -153,7 +154,7 @@ class CryptoCoinDataAPI {
     saveSyncCoinData() {
         const dict = {};
         dict[this.storageKey] = this.syncCoinData;
-        this.$console.log(dict);
+        // this.$console.log('save: ', dict);
         return this.DB.syncSetItem(dict);
     }
 
@@ -180,7 +181,8 @@ class CryptoCoinDataAPI {
         const dict = {};
         dict[this.storageKey] = {};
         dict[this.storageKey][this.priceDataKey] = {};
-        return this.DB.syncSetItem(dict);
+        // this.$console.log('clearLocalCoinData: ', dict)
+        return this.DB.localSetItem(dict);
     }
 
     addUserCoin(coinSymbol) {
