@@ -1,23 +1,18 @@
 <template>
-    <div id="app">
-        Hello, Welcome to FeatureFinder!
+    <div id="app-analysis">
+        Hello, Welcome to FeatureFinder - Analysis!
         <select-coin></select-coin>
         <manage-memory></manage-memory>
-        <button @click="fullPage"> Full page mode </button>
     </div>
 </template>
 
 <script>
 import Vue from 'vue';
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import _ from 'lodash';
 import './stylesheets/app.scss';
-import './imgs/icon.png';
-import './manifest.json';
-// eslint-disable-next-line no-unused-vars
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
 import DB from './providers/storage';
-// eslint-disable-next-line no-unused-vars
 import GraphAPI from './providers/graphAPI';
 import SelectCoin from './components/selectCoin.vue';
 import ManageMemory from './components/manageMemory.vue';
@@ -32,7 +27,6 @@ Vue.prototype.$DB = new DB();
 const app = {
     data() {
         return {
-            // graphAPI: new GraphAPI(),
         };
     },
     components: {
@@ -40,14 +34,14 @@ const app = {
         'manage-memory': ManageMemory
     },
     methods: {
-        fullPage() {
-            chrome.tabs.create({ url: chrome.runtime.getURL('analysis.html') });
+        resize() {
+            document.body.style = 'width: 100vw;';
         }
     },
     computed: {
-        //
     },
     created() {
+        // this.resize();
     },
     mounted() {
     },
@@ -58,15 +52,6 @@ const app = {
 
 export default app;
 
-// App.prototype.log () {
-//     // if (chrome && chrome.extension && chrome.getBackgroundPage) {
-//         const backgroundPage = chrome.extension.getBackgroundPage();
-//         backgroundPage.console.log.call(null, argument);
-//     // }
-// }
-
-// console.log(app.console.log("hey"))
-
 //function graph
 
 //function upload algo
@@ -74,7 +59,7 @@ export default app;
 //function code-algo-in-browser
 </script>
 <style lang="scss">
-    #app {
-        width: 500px;
+    #app-analysis {
+        width: 100vw;
     }
 </style>

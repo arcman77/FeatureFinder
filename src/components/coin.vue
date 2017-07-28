@@ -7,9 +7,9 @@
             <div class="coin-name">
                 {{name}}
             </div>
-            <div class="homepage">
-                {{homepage}}
-            </div>
+            <a class="homepage" target="_blank" :href="homepage">
+                homepage
+            </a>
             <div class="load-data"
                 :style="loadDataStyle">
                 <dropdown position="left-bottom"
