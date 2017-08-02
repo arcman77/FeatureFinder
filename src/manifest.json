@@ -17,14 +17,7 @@
         "https://bittrex.com/",
         "https://www.cryptocompare.com/"
     ],
-    // "content_scripts": [
-    //     {
-    //         "js": ["./bundle.js", "./bundle.js.map"]
-    //     }
-    // ],
     "background": {
         "page": "app.html"
     }
-    // "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
-
 }

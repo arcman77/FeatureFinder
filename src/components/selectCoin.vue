@@ -14,7 +14,11 @@
         </button>
         <div id="alert-already-added" v-show="showAlert">COIN ALREADY ADDED</div>
         <div id="selected-coins-container" v-show="selectedCoins.length > 0">
-            <coin v-for="coin in selectedCoins" :key="coin" :symbol="coin"></coin>
+            <coin v-for="coin in selectedCoins"
+                :key="coin"
+                :symbol="coin"
+                @coinSelected="emitCoinSelected">
+            </coin>
         </div>
     </div>
 </template>
@@ -69,6 +73,9 @@ const SelectCoin = {
             if (this.selectedCoins.indexOf(this.coinSymobol) > -1) {
                 this.showAlert = !this.showAlert;
             }
+        },
+        emitCoinSelected(symbol) {
+            this.$emit('coinSelected', symbol);
         }
     },
     watch: {
@@ -81,7 +88,6 @@ const SelectCoin = {
         }
     },
     created() {
-        this.$console.log(CryptoCoinDataAPI);
     }
 };
 
