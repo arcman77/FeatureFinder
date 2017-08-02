@@ -11,18 +11,25 @@ class CryptoCoinDataAPI {
         this.storageKey = '_coinData_';
         this.selectedCoinsKey = 'selectedCoins';
         this.priceDataKey = 'priceData';
+        this.liveDataKey = 'liveData';
         this.$console = chrome.extension.getBackgroundPage().console;
         this.servedData = {
             selectedCoins: [],
             priceData: {},
+            liveData: {},
             localBytesInUse: 0,
             syncBytesInUse: 0
         };
         this.providers = {
             bittrex: new Bittrex(),
             coinMarketCap: new CoinMarketCap(),
-            cryptoCompare: new CryptoCompare()
+            cryptoCompare: new CryptoCompare({
+                selectedCoins: this.servedData.selectedCoins,
+                priceData: this.servedData.liveData
+            })
         };
+
+        window.coins = this.servedData.selectedCoins;
         const self = this;
         this.DB.syncGetItem(this.storageKey).then((storageObject) => {
             self.setCoinStorageData('sync', storageObject);
