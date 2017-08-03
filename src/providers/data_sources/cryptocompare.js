@@ -80,6 +80,14 @@ class CryptoCompare {
 
     handleUpdate(message) {
         this.console.log('Got an update from socket!', message);
+
+        const tokens = message.split('~');
+
+        if (tokens.length === 1) {
+            return;
+        }
+
+        return '';
     }
 
     getAction(actionName) {
