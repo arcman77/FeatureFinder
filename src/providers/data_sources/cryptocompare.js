@@ -16,6 +16,7 @@ import io from 'socket.io-client';
 //     });
 // };
 
+
 // TODO: need to establish working reactivity of selected coins
 class CryptoCompare {
     constructor(opts = {}) {
@@ -64,11 +65,12 @@ class CryptoCompare {
             this.console.log('This is new coins', coin);
             const quotePair = FIAT_COINS.includes(coin) ? 'USD' : 'BTC';
 
-            const subcription = `5~CCCAGG~${coin}~${quotePair}`;
 
-            if (!this.subscriptions.includes(subcription)) {
-                this.subscriptions.push(subcription);
-                newSubscriptions.push(subcription);
+            const subscription = `5~CCCAGG~${coin}~${quotePair}`;
+
+            if (!this.subscriptions.includes(subscription)) {
+                this.subscriptions.push(subscription);
+                newSubscriptions.push(subscription);
             }
         });
 
