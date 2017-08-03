@@ -10,6 +10,11 @@
             <a class="homepage" target="_blank" :href="homepage">
                 homepage
             </a>
+            <div class="graph-coin"
+                v-show="tickData.length > 0"
+                @click="emitCoinSelected">
+                graph
+            </div>
             <div class="load-data"
                 :style="loadDataStyle">
                 <dropdown position="left-bottom"
@@ -59,15 +64,25 @@ const Coin = {
             this.homepage = info ? info.homepage : null;
         },
         fetchData(coinSymbol, minuteInterval) {
-            const self = this;
+            // const self = this;
             CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval)
             .then((data) => {
-                self.$console.log(data)
+                // self.$console.log(data)
             });
         },
         performMenuAction(actionValue) {
             this.fetchData(this.symbol, actionValue);
         },
+        emitCoinSelected() {
+            if (this.$view === 'main') {
+                this.fullPage();
+            } else if (this.$view === 'analysis') {
+                this.$emit('coinSelected', this.symbol);
+            }
+        },
+        fullPage() {
+            chrome.tabs.create({ url: chrome.runtime.getURL(`analysis.html?coin=${this.symbol}`) });
+        }
     },
     computed: {
         loadDataStyle() {
@@ -154,11 +169,19 @@ $grey-ml: #B3B3B3;
         margin-right: 10px;
         display: inline-block;
     }
+    .graph-coin {
+        margin-left: 5px;
+        min-width: 10px;
+        color: white;
+        display: inline-block;
+        cursor: pointer;
+    }
     .load-data {
         border-radius: 50%;
         width: 15px;
         height: 15px;
         display: inline-block;
+        cursor: pointer;
     }
 }
 
