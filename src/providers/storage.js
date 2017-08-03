@@ -23,7 +23,7 @@ function DB() {
 }
 
 DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
-    const self = this;
+    // const self = this;
     return new Promise((resolve, reject) => {
         try {
             asyncFunc(args, (results) => {
