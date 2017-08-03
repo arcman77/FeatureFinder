@@ -58,17 +58,17 @@ class GraphAPI {
         });
     }
 
-    static getSignalSeries(processedStockData, stockAlgoFunction) {
+    static getSignalSeries(processedTickData, tickAlgoFunction) {
         var series = [];
         var scale = 'Day';
 
         series.push({
             id: `${scale} price`,
             name: `${scale} price`,
-            data: processedStockData,
+            data: processedTickData,
         });
-        //call stockAlgoFunction on stock data:
-        const buySellSignals = stockAlgoFunction(processedStockData);
+        //call TickAlgoFunction on Tick data:
+        const buySellSignals = tickAlgoFunction(processedTickData);
         const buyFlagSeries = buySellSignals.buy.map((signal, index) => ({
             x: signal[0],
             text: `bought at: $${signal[1]}`,
@@ -117,7 +117,7 @@ class GraphAPI {
          // }
         });
 
-        return series; //contains regular stock data in addition to the newly generated signals
+        return series; //contains regular Tick data in addition to the newly generated signals
     }
 }
 

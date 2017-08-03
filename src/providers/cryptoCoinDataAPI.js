@@ -67,6 +67,23 @@ class CryptoCoinDataAPI {
         };
         this.generalCoinInfoFillIn();
         this.watchSyncStorage();
+        this.fetch = {
+            historic: {
+                //returns Ajax Promise
+                priceData(symbol, minuteInterval) {
+                    const req = self.providers.bittrex.getMinuteTicksData(symbol, minuteInterval);
+                    req.then((response) => {
+                        //{"success":true,"message":"","result":[{"O":0.13350000,
+                        if (response.success && response.result) {
+                            self.saveLocalCoinPriceData(symbol, response.result);
+                        }
+                        return response;
+                    });
+
+                    return req;
+                }
+            }
+        };
     }
 
     setCoinStorageData(area, storageObject, isUpdateEvent) {
@@ -75,7 +92,6 @@ class CryptoCoinDataAPI {
             return null;
         }
         const propertyName = `${area}CoinData`;
-        // this.$console.log(area, storageObject, isUpdateEvent)
         if (isUpdateEvent) {
             let key;
             //eslint-disable-next-line no-restricted-syntax
@@ -87,6 +103,7 @@ class CryptoCoinDataAPI {
             this[propertyName] = storageObject || {};
             // unwrap
             this[propertyName] = this[propertyName][this.storageKey] || {};
+
             if (area === 'sync') {
                 //eslint-disable-next-line max-len
                 this[propertyName][this.selectedCoinsKey] = this[propertyName][this.selectedCoinsKey] || [];
@@ -103,6 +120,7 @@ class CryptoCoinDataAPI {
     }
 
     watchSyncStorage() {
+        // TODO: invesitgate why var name 'self' can't be used in chrome callbacks
         const selff = this;
         chrome.storage.onChanged.addListener((changes, area) => {
             // selff.$console.log('storage changed happened', changes, area)
@@ -136,9 +154,7 @@ class CryptoCoinDataAPI {
     saveSyncCoinData() {
         const dict = {};
         dict[this.storageKey] = this.syncCoinData;
-        //sync storage takes key vale pairs
-        this.$console.log('inside saveCoinData: ');
-        this.$console.log(dict);
+        // this.$console.log('save: ', dict);
         return this.DB.syncSetItem(dict);
     }
 
@@ -146,6 +162,11 @@ class CryptoCoinDataAPI {
         const dict = {};
         dict[this.storageKey] = this.localCoinData;
         return this.DB.localSetItem(dict);
+    }
+
+    saveLocalCoinPriceData(coinSymbol, data) {
+        this.localCoinData[this.priceDataKey][coinSymbol] = data;
+        this.saveLocalCoinData();
     }
 
     clearSyncCoinData() {
@@ -160,7 +181,8 @@ class CryptoCoinDataAPI {
         const dict = {};
         dict[this.storageKey] = {};
         dict[this.storageKey][this.priceDataKey] = {};
-        return this.DB.syncSetItem(dict);
+        // this.$console.log('clearLocalCoinData: ', dict)
+        return this.DB.localSetItem(dict);
     }
 
     addUserCoin(coinSymbol) {
@@ -185,6 +207,18 @@ class CryptoCoinDataAPI {
 
     getStorageQuota(area) {
         return this.DB.getStorageQuota(area);
+    }
+
+    getLocalCoinData() {
+        return this.localCoinData;
+    }
+
+    getLocalCoinPriceData() {
+        return this.localCoinData[this.priceDataKey];
+    }
+
+    getLocalCoinPriceSymbolData(symbol) {
+        return this.localCoinData[this.priceDataKey][symbol];
     }
 
     scrapeHomepageUrl(coinSymbol) {

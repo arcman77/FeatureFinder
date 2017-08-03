@@ -5,10 +5,14 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var config = require('./config');
 
 module.exports = {
-    entry: ['babel-polyfill', path.resolve('src', 'main.js')],
+    entry: {
+        vendor: ['babel-polyfill'],
+        main: path.resolve('src', 'main.js'),
+        analysisMain: path.resolve('src', 'analysisMain.js')
+    },
     output: {
         path: path.resolve('extension_bundle'),
-        filename: 'bundle.js'
+        filename: '[name]Bundle.js'
     },
     module: {
         rules: [
@@ -89,7 +93,15 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'app.html',
             template: 'app.html',
+            excludeChunks: ['analysisMain'],
             inject: true
+        }),
+
+        new HtmlWebpackPlugin({
+            filename: 'analysis.html',
+            template: 'analysis.html',
+            excludeChunks: ['main'],
+            inhect: true
         }),
         //Sets variables based on config file
         new webpack.DefinePlugin({

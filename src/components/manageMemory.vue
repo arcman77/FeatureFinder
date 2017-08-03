@@ -5,29 +5,30 @@
         <br>
         <div id="sync-bytes-in-use">
             <span class="storage-area">
-                Sync
-            </span>:
+                Sync <span style="color: white;">:</span>
+            </span>
             <span class="bytes-in-use">
-                {{syncBytesInUse}} Bytes
+                {{ formatedSyncBytesInUse }}
             </span>
              {{ syncBytesQuotaPercentage }} % 
+            <button id="clear-sync-storage" @click="clearSyncCoinData">CLEAR COIN SYNC STORAGE</button>
         </div>
         <div id="local-bytes-in-use">
             <span class="storage-area">
-                Local
-            </span>:
+                Local <span style="color: white;">:</span>
+            </span>
             <span class="bytes-in-use">
-                {{localBytesInUse}} Bytes
+                {{ formatedLocalBytesInUse }}
             </span>
              {{ localBytesQuotaPercentage }} %
+            <button id="clear-local-storage" @click="clearLocalCoinData">CLEAR COIN LOCAL STORAGE</button>
         </div>
-        <button id="clear-sync-storage" @click="clearSyncCoinData">CLEAR COIN SYNC STORAGE</button>
-        <button id="clear-local-storage" @click="clearLocalCoinData">CLEAR COIN LOCAL STORAGE</button>
     </div>
 </template>
 <script type="text/javascript">
 
 import CryptoCoinDataAPI from '../providers/cryptoCoinDataAPI';
+import Utils from '../providers/utils';
 
 const ManageMemory = {
     data() {
@@ -82,6 +83,12 @@ const ManageMemory = {
         },
         localBytesQuotaPercentage() {
             return ((this.localBytesInUse / this.localBytesQuota) * 100).toFixed(2);
+        },
+        formatedSyncBytesInUse() {
+            return Utils.formatBytes(this.syncBytesInUse, 2);
+        },
+        formatedLocalBytesInUse() {
+            return Utils.formatBytes(this.localBytesInUse, 2);
         }
     },
     watch: {
@@ -112,35 +119,44 @@ export default ManageMemory;
         font-size: 14px;
         font-weight: 200;
         margin-top: 15px;
-    }
-
-    .storage-area {
-        color: orange;
-    }
-
-    .bytes-in-use {
-        margin-left: 10px;
-        margin-right: 10px;
-        padding-right: 40px;
-        min-width: 40px;
-    }
-
-    #clear-sync-storage, #clear-local-storage {
-        color: white;
-        line-height: 12px;
-        font-size: 12px;
-        font-weight: 200;
-        background-color: red;
-        border: none;
-        margin-top: 15px;
-        margin-bottom: 15px;
-        padding: 4px;
-        border-radius: 3px;
-        &:focus {
-            outline: none;
-        }
-        &:active {
-            background-color: #990033;
+        #local-bytes-in-use, #sync-bytes-in-use {
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+            .storage-area {
+                color: orange;
+                display: inline-block;
+            }
+            .bytes-in-use {
+                margin-left: 10px;
+                margin-right: 10px;
+                padding-right: 50px;
+                min-width: 50px;
+                // display: inline-block;
+                display: flex;
+                text-align: right;
+                // justify-content: flex-end;
+            }
+            #clear-sync-storage, #clear-local-storage {
+                display: inline-block;
+                display: flex;
+                color: white;
+                line-height: 12px;
+                font-size: 12px;
+                font-weight: 200;
+                background-color: red;
+                border: none;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                padding: 4px;
+                border-radius: 3px;
+                &:focus {
+                    outline: none;
+                }
+                &:active {
+                    background-color: #990033;
+                }
+            }
         }
     }
 </style>
