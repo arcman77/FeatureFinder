@@ -1,19 +1,20 @@
 import io from 'socket.io-client';
-import EventEmitter from 'eventemitter3';
+// import EventEmitter from 'eventemitter3';
+// import CryptoCoinDataAPI from '../cryptoCoinDataAPI';
 
-const watch = (obj) => {
-    obj.emitter = new EventEmitter();
-    obj.emit = obj.emitter.emit.bind(obj.emitter);
-    obj.on = obj.emitter.on.bind(obj.emitter);
+// const watch = (obj) => {
+//     obj.emitter = new EventEmitter();
+//     obj.emit = obj.emitter.emit.bind(obj.emitter);
+//     obj.on = obj.emitter.on.bind(obj.emitter);
 
-    return new Proxy(obj, {
-        set(target, key, value) {
-            console.log('Changing!', key, value);
-            obj.emit('change', { [key]: value });
-            target[key] = value;
-        }
-    });
-};
+//     return new Proxy(obj, {
+//         set(target, key, value) {
+//             console.log('Changing!', key, value);
+//             obj.emit('change', { [key]: value });
+//             target[key] = value;
+//         }
+//     });
+// };
 
 // TODO: need to establish working reactivity of selected coins
 class CryptoCompare {
@@ -23,7 +24,14 @@ class CryptoCompare {
         this.socket = io.connect('https://streamer.cryptocompare.com/');
         // this.selectedCoins = watch(opts.selectedCoins || []);
         // this.selectedCoins = opts.selectedCoins;
-        this.selectedCoins = [{ symbol: 'BTC' }, { symbol: 'ETH' }, { symbol: 'NMR' }];
+        const CryptoCoinDataAPI = opts.CryptoCoinDataAPI;
+        this.servedData = CryptoCoinDataAPI.servedData;
+        // this.userSelectedCoins = this.servedData;
+        window.test = this.servedData;
+
+        this.selectedCoins = this.servedData.selectedCoins;
+
+        // this.selectedCoins = [{ symbol: 'BTC' }, { symbol: 'ETH' }, { symbol: 'NMR' }];
         this.liveData = opts.liveData || [];
         this.console = chrome.extension.getBackgroundPage().console;
         this.subscriptions = [];
@@ -37,9 +45,9 @@ class CryptoCompare {
 
         this.selectedCoins.forEach((coin) => {
             this.console.log('This is coins', coin);
-            const quotePair = FIAT_COINS.includes(coin.symbol) ? 'USD' : 'BTC';
+            const quotePair = FIAT_COINS.includes(coin) ? 'USD' : 'BTC';
 
-            this.subscriptions.push(`5~CCCAGG~${coin.symbol}~${quotePair}`);
+            this.subscriptions.push(`5~CCCAGG~${coin}~${quotePair}`);
         });
 
         console.log('Adding', this.subscriptions);
@@ -54,9 +62,9 @@ class CryptoCompare {
 
         this.selectedCoins.forEach((coin) => {
             this.console.log('This is new coins', coin);
-            const quotePair = FIAT_COINS.includes(coin.symbol) ? 'USD' : 'BTC';
+            const quotePair = FIAT_COINS.includes(coin) ? 'USD' : 'BTC';
 
-            const subcription = `5~CCCAGG~${coin.symbol}~${quotePair}`;
+            const subcription = `5~CCCAGG~${coin}~${quotePair}`;
 
             if (!this.subscriptions.includes(subcription)) {
                 this.subscriptions.push(subcription);
