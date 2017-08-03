@@ -25,7 +25,8 @@ class CryptoCoinDataAPI {
             coinMarketCap: new CoinMarketCap(),
             cryptoCompare: new CryptoCompare({
                 selectedCoins: this.servedData.selectedCoins,
-                priceData: this.servedData.liveData
+                priceData: this.servedData.liveData,
+                CryptoCoinDataAPI: this
             })
         };
 
