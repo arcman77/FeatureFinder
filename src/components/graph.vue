@@ -75,7 +75,7 @@ $grey-ml: #B3B3B3;
 
 #main-graph {
     width: 60vw;
-    height: 45vh;
+    height: 50vh;
     display: inline-block;
     padding: 10px;
     background-color: $grey-ml;

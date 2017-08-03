@@ -79,9 +79,23 @@ export default app;
 //function code-algo-in-browser
 </script>
 <style lang="scss">
+$jet-black: #1A1A1A;
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
 #app-analysis {
     width: 100vw;
+    max-height: 50vh;
     display: flex;
+    background-color: $jet-black;
 }
 
 .tools-right {
