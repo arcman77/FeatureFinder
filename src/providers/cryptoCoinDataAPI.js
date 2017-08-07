@@ -222,12 +222,15 @@ class CryptoCoinDataAPI {
     }
 
     scrapeHomepageUrl(coinSymbol) {
-        const name = this.generalCoinInfo[coinSymbol];
+        const name = this.generalCoinInfo[coinSymbol].name;
         const self = this;
-        this.coinMarketCap.getCoinHomepage(name).then((homepage) => {
+        return this.providers.coinMarketCap.getCoinHomepage(name)
+        .then((homepage) => {
             self.$console.log('in get coin homepage');
             if (homepage) {
                 self.generalCoinInfo[coinSymbol].homepage = homepage;
+                console.log('homepage found:');
+                console.log(homepage);
                 return new Promise((resolve) => {
                     resolve(true);
                 });

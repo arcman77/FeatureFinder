@@ -15,7 +15,8 @@
         "unlimitedStorage",
         "https://ajax.googleapis.com/",
         "https://bittrex.com/",
-        "https://www.cryptocompare.com/"
+        "https://www.cryptocompare.com/",
+        "https://coinmarketcap.com/"
     ],
     "background": {
         "page": "app.html"

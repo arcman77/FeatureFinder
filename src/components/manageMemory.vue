@@ -150,6 +150,7 @@ export default ManageMemory;
                 margin-bottom: 15px;
                 padding: 4px;
                 border-radius: 3px;
+                cursor: pointer;
                 &:focus {
                     outline: none;
                 }

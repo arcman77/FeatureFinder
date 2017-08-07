@@ -290,7 +290,6 @@ class Bittrex {
     }
 
     getMinuteTicksData(coinSymbol, tickInterval) {
-        this.$console.log(this.getMinuteTicksUrl(coinSymbol, tickInterval));
         return $.ajax({
             url: this.getMinuteTicksUrl(coinSymbol, tickInterval),
             method: 'GET'

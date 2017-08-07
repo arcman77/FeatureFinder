@@ -93,11 +93,11 @@ const Coin = {
             if (len > 5000) {
                 backgroundColor = '#00ce85';
                 borderColor = '#00b6ce';
-                borderWidth = '5px';
+                borderWidth = '2px';
             } else if (len > 1000) {
                 backgroundColor = 'yellow';//#f7db07
                 borderColor = '#e0b108';
-                borderWidth = '3px';
+                borderWidth = '2px';
             } else {
                 backgroundColor = '#c40105';
                 borderColor = '#c60139';

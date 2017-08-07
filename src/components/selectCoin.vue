@@ -20,7 +20,7 @@
                 SEARCH COIN
             </button>
         </div>
-        <div id="alert-already-added" v-show="showAlert">COIN ALREADY ADDED</div>
+        <div id="alert-already-added" v-show="showAlertState">COIN ALREADY ADDED</div>
         <div id="selected-coins-container" 
             :class="{'full-page-mode': $view === 'analysis'}"
             v-show="selectedCoins.length > 0">
@@ -44,7 +44,8 @@ const SelectCoin = {
             coinSymobol: '',
             selectedCoins: CryptoCoinDataAPI.servedData.selectedCoins,
             servedData: CryptoCoinDataAPI.servedData,
-            showAlert: false
+            showAlertState: false,
+            timeout: null
         };
     },
     components: {
@@ -53,20 +54,28 @@ const SelectCoin = {
     methods: {
         addCoin() {
             var coinSymobol = this.coinSymobol;
-            if (!coinSymobol || this.selectedCoins.indexOf(coinSymobol) > -1) {
-                this.$console.log('already added');
+            if (!coinSymobol) {
+                return;
+            }
+            if (this.selectedCoins.indexOf(coinSymobol) > -1) {
+                this.showAlertState = true;
+                const self = this;
+                clearTimeout(this.timeout);
+                this.timeout = setTimeout(() => {
+                    self.showAlertState = false;
+                }, 700);
                 return;
             }
             if (CryptoCoinDataAPI.hasCoin(coinSymobol)) {
                 CryptoCoinDataAPI.addUserCoin(coinSymobol);
-                // const self = this;
+                const self = this;
                 CryptoCoinDataAPI.scrapeHomepageUrl(coinSymobol).then((successStatus) => {
                     if (successStatus) {
-                        // self.$console.log('good successStatus', successStatus)
+                        self.$console.log('good successStatus', successStatus)
                         // self.$console.log(self.selectedCoins)
                     } else {
-                        // self.$console.log('bad successStatus: ')
-                        // self.$console.log(successStatus)
+                        self.$console.log('bad successStatus: ')
+                        self.$console.log(successStatus)
                     }
                 }).catch(() => {
                     this.$console.log('did not find coin homepage');
@@ -81,7 +90,7 @@ const SelectCoin = {
             //TODO: FIX
             // this.$console.log('showAlert')
             if (this.selectedCoins.indexOf(this.coinSymobol) > -1) {
-                this.showAlert = !this.showAlert;
+                this.showAlertState = !this.showAlertState;
             }
         },
         emitCoinSelected(symbol) {
@@ -157,7 +166,7 @@ $jet-black: #1A1A1A;
                 outline: none;
             }
             &:active {
-                color: green;
+                color: gold;
             }
         }
     }
@@ -185,6 +194,7 @@ $jet-black: #1A1A1A;
         font-size: 12px;
         line-height: 12px;
         display: inline-block;
+        transition: all 1s linear;
     }
     .selected-coin {
         background-color: $grey-dark;
