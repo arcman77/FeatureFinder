@@ -16,19 +16,18 @@ const upload = {
     },
     methods: {
         onFileChange(e) {
-            const self = this;
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) {
                 return;
             }
             const file = files[0];
             const reader = new FileReader();
+            const fileObj = { name: file.name };
             reader.onload = function() {
                 // Entire file
-                console.log(this.result);
-                UserFilesAPI.addUserFile(this.result, 'sync').then((result) => {
-                    self.$console.log(result)
-                    self.$console.log(UserFilesAPI)
+                fileObj.fileStr = this.result;
+                UserFilesAPI.addUserFile(fileObj, 'sync').then((result) => {
+                    // self.$console.log(UserFilesAPI)
                 });
             };
             reader.readAsText(file);
@@ -55,16 +54,21 @@ export default upload;
     #upload-js-file {
         line-height: 15px;
         font-size: 15px;
-        color: white;
-        background-color: black;
-        border-radius: 7.5px;
+        color: rgb(155, 155, 155);
+        background-color: rgb(26, 26, 26);
+        border-color: rgb(155, 155, 155);
+        border-radius: 5px;
         padding: 5px;
-        border: 1px solid white;
+        border: 1px solid;
         margin-left: 5px;
         margin-right: 5px;
         font-weight: 2;
         &:focus {
             outline: none;
+        }
+        &:hover {
+            color: rgb(210, 210, 210);
+            border-color: rgb(210, 210, 210);  
         }
     }
 </style>

@@ -25,7 +25,6 @@
 import _ from 'lodash';
 import './stylesheets/app.scss';
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
-import GraphAPI from './providers/graphAPI';
 import SelectCoin from './components/selectCoin.vue';
 import ManageMemory from './components/manageMemory.vue';
 import Graph from './components/graph.vue';

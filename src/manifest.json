@@ -20,5 +20,8 @@
     ],
     "background": {
         "page": "app.html"
+    },
+    "sandbox": {
+        "pages": ["runAlgos.html"]
     }
 }

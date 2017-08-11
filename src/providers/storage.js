@@ -47,7 +47,6 @@ DB.prototype.syncGetAll = function() {
 */
 
 DB.prototype.syncSetItem = function(dictionary) {
-    this.$console.log('set')
     return this._syncStorageQueryTemplate_(dictionary, this.syncStorage.set);
 };
 

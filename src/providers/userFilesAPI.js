@@ -71,9 +71,9 @@ class UserFilesAPI {
         dict[this.storageKey][this.jsFilesKey] = {};
         return this.DB.syncSetItem(dict);
     }
-    addUserFile(fileStr, area) {
-        const fileKey = sha256(fileStr);
-        this[`${area}FileData`][this.jsFilesKey][fileKey] = fileStr;
+    addUserFile(fileObj, area) {
+        const fileKey = sha256(fileObj.fileStr);
+        this[`${area}FileData`][this.jsFilesKey][fileKey] = fileObj;
         return this[`${area}SaveFileData`]();
     }
 }
