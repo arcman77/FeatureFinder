@@ -4,7 +4,7 @@
 <script>
 
 const graph = {
-    props: ['data', 'symbol'],
+    props: ['data', 'symbol', 'series'],
     data() {
         return {
             scale: 'min'
@@ -15,12 +15,23 @@ const graph = {
             return this.data.map(data => [Number(new Date(data.T)), data.C]);
         },
         options() {
+            this.$forceUpdate();
             const title = `${this.symbol} Price Data`;
             const seriesUsed = [{
-                id: `${this.scale} price`,
+                id: 'priceData',
                 name: `${this.scale} price`,
                 data: this.highstockFormated
             }];
+            if (this.series) {
+                this.series.forEach((subSeries) => {
+                    if (subSeries.length > this.highstockFormated.length) {
+                        //eslint-disable-next-line no-param-reassign
+                        subSeries = subSeries.slice(0, this.highstockFormated.length);
+                    }
+                    seriesUsed.push(subSeries);
+                });
+                console.log(seriesUsed)
+            }
             return {
                 rangeSelector: {
                     allButtonsEnabled: true,
@@ -61,8 +72,6 @@ const graph = {
                 }
             };
         }
-    },
-    created() {
     }
 };
 

@@ -1,24 +1,3 @@
-<template>
-    <div id="app-analysis">
-        <div id="top">
-            <graph v-if="selectedCoin && loadedTickData"
-                :symbol="selectedCoin"
-                :data="loadedTickData">
-            </graph>
-            <div class="tools-right">
-                <select-coin class="tools"
-                    @coinSelected="setSelectedCoin">
-                </select-coin>
-                <manage-memory class="tools">
-                </manage-memory>
-            </div>
-        </div>
-        <div id="bottom">
-            <tools-main></tools-main>
-        </div>
-    </div>
-</template>
-    
 <script>
 
 /* eslint-disable no-unused-vars */
@@ -37,7 +16,8 @@ const app = {
         return {
             showGraph: false,
             selectedCoin: null,
-            servedData: CryptoCoinDataAPI.servedData
+            servedData: CryptoCoinDataAPI.servedData,
+            signals: null
         };
     },
     components: {
@@ -52,6 +32,12 @@ const app = {
         },
         resizeBody() {
             document.body.style = 'width: 100vw';
+        },
+        updateSelectedCoin(symbol) {
+            this.selectedCoin = symbol;
+        },
+        setSignals(signals) {
+            this.signals = signals;
         }
     },
     computed: {
@@ -68,19 +54,39 @@ const app = {
         if (params) {
             this.selectedCoin = params;
         }
-    },
-    mounted() {
-    },
-    beforeDestroy() {
     }
 };
 
 export default app;
 
-//function upload algo
-
-//function code-algo-in-browser
 </script>
+
+<template>
+    <div id="app-analysis">
+        <div id="top">
+            <graph v-if="selectedCoin && loadedTickData"
+                :symbol="selectedCoin"
+                :data="loadedTickData"
+                :series="signals">
+            </graph>
+            <div class="tools-right">
+                <select-coin class="tools"
+                    @coinSelected="setSelectedCoin">
+                </select-coin>
+                <manage-memory class="tools">
+                </manage-memory>
+            </div>
+        </div>
+        <div id="bottom">
+            <tools-main 
+                @coinSelected="updateSelectedCoin"
+                :selectedCoin="selectedCoin"
+                @signals="setSignals">
+            </tools-main>
+        </div>
+    </div>
+</template>
+
 <style lang="scss">
 $jet-black: #1A1A1A;
 

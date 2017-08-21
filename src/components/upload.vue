@@ -52,8 +52,8 @@ export default upload;
 </script>
 <style lang="scss">
     #upload-js-file {
-        line-height: 15px;
-        font-size: 15px;
+        line-height: 20px;
+        font-size: 20px;
         color: rgb(155, 155, 155);
         background-color: rgb(26, 26, 26);
         border-color: rgb(155, 155, 155);
@@ -68,7 +68,8 @@ export default upload;
         }
         &:hover {
             color: rgb(210, 210, 210);
-            border-color: rgb(210, 210, 210);  
+            border-color: rgb(210, 210, 210);
+            cursor: pointer;
         }
     }
 </style>

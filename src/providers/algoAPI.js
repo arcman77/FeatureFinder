@@ -1,4 +1,4 @@
-class RunAlgoAPI {
+class AlgoAPI {
     constructor() {
         this.iframe = document.getElementById('run-algo');
         if (!this.iframe) {
@@ -9,7 +9,7 @@ class RunAlgoAPI {
             setData: true,
             getSignals: true
         };
-        this.listen();
+        this.constructor.listen();
     }
     /*
      * @param {message} Object
@@ -18,10 +18,12 @@ class RunAlgoAPI {
             optional @key {fileInfo}
     */
     sendMessage(message) {
+        if (!this.iframe) {
+            this.iframe = document.getElementById('run-algo');
+        }
         this.iframe.contentWindow.postMessage(message, '*');
     }
     static listen() {
-        // const self = this;
         window.addEventListener('message', (event) => {
             console.log(event);
         });
@@ -29,5 +31,5 @@ class RunAlgoAPI {
 
 }
 
-export default new RunAlgoAPI();
+export default new AlgoAPI();
 

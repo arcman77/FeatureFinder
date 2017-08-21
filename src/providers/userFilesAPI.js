@@ -17,6 +17,7 @@ class UserFilesAPI {
         this.DB.syncGetItem(this.storageKey).then((storageObject) => {
             self.setFilesStorageData('sync', storageObject);
         });
+        window.userFilesAPI = this;
     }
     setFilesStorageData(area, storageObject, isUpdateEvent) {
         if (area !== 'sync' && area !== 'local') {
