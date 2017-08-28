@@ -76,7 +76,7 @@ class AlgoUtils {
         const self = this;
         boughtIds.forEach((bidId) => {
             buyBid = this.currentBuyLedger[bidId];
-            if (buyBid[1] > priceDatum[1]) {
+            if (buyBid[1] < priceDatum[1]) {
                 self.addSellBid(priceDatum, buyBid[2]);
                 delete self.currentBuyLedger[bidId];
                 soldCount++;
@@ -86,16 +86,16 @@ class AlgoUtils {
             this.currentFunds += ((soldCount - 1) * this.tFee);
         }
     }
-    getNetWorth() {
+    getNetWorth(priceDatum) {
         let sum = this.currentFunds;
         let buyBid;
         const self = this;
         const boughtIds = Object.keys(this.currentBuyLedger);
         boughtIds.forEach((bidId) => {
             buyBid = self.currentBuyLedger[bidId];
-            sum += (buyBid[1] * buyBid[2]);
+            sum += (priceDatum[1] * buyBid[2]);
         });
-        return sum;
+        return [priceDatum[0], sum];
     }
     addBuyBid(priceDatum, numberOfBids) {
         const id = this.bCount;

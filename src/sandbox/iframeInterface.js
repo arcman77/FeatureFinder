@@ -12,6 +12,7 @@ class MessageInterface {
         this.files = {};
         this.userFunctions = {};
         this.priceData = {};
+        this.pendingRequests = {};
         this.listenForCommands();
     }
     listenForCommands() {
@@ -58,8 +59,9 @@ class MessageInterface {
     getSignals(event) {
         const fileKey = event.data.hashKey || event.data.filename;
         const symbol = event.data.symbol;
+        const ops = event.data.options;
         const file = this.getFile(fileKey);
-        const signals = this.runFile(file.fileStr, symbol);
+        const signals = this.runFile(file.fileStr, symbol, ops);
         event.source.postMessage({
             signals: signals
         }, event.origin);
@@ -76,13 +78,44 @@ class MessageInterface {
             fileStr: fileInfo.fileStr
         };
     }
-    runFile(fileStr, symbol) {
+    optimizer(fileStr, symbol, opsRanges) {
+        const self = this;
+        const paramKeys = Object.keys(opsRanges);
+        let minP;
+        let maxP;
+        let varyParam;
+        let delta;
+        let ops;
+        // if coupled
+        // if uncoupled
+        paramKeys.forEach((param) => {
+            if (Array.isArray(opsRanges[param])) {
+                const range = opsRanges[param];
+                ops = {};
+                range.forEach((value) => {
+                    ops[param] = value;
+                    self.runFile(fileStr, symbol, ops);
+                });
+            } else {
+                minP = opsRanges[param].rangeStart;
+                maxP = opsRanges[param].rangeEnd;
+                delta = opsRanges[param].delta || 1;
+                for (varyParam = minP; varyParam <= maxP; varyParam += delta) {
+                    ops = {};
+                    ops[param] = varyParam;
+                    self.runFile(fileStr, symbol, ops);
+                }
+            }
+        });
+    }
+    runFile(fileStr, symbol, ops) {
+        const self = this;
         //eslint-disable-next-line no-unused-vars
-        const utils = new AlgoUtils(5000);
+        window.utils = new AlgoUtils(5000);
         //eslint-disable-next-line no-eval
         window.eval(fileStr); // user defines getSignals
         //eslint-disable-next-line no-undef
-        return window.getSignals(this.priceData[symbol], 10, utils);
+        return window.getSignals(self.priceData[symbol], ops);
     }
     getFile(uniqStr) {
         if (!uniqStr) {

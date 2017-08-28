@@ -20,7 +20,8 @@ const graph = {
             const seriesUsed = [{
                 id: 'priceData',
                 name: `${this.scale} price`,
-                data: this.highstockFormated
+                data: this.highstockFormated,
+                yAxis: 0
             }];
             if (this.series) {
                 this.series.forEach((subSeries) => {
@@ -30,7 +31,6 @@ const graph = {
                     }
                     seriesUsed.push(subSeries);
                 });
-                console.log(seriesUsed)
             }
             return {
                 rangeSelector: {
@@ -52,11 +52,18 @@ const graph = {
                     type: 'datetime',
                 },
 
-                yAxis: {
-                    title: {
-                        text: 'Price'
+                yAxis: [
+                    {
+                        title: {
+                            text: 'Price'
+                        }
+                    },
+                    {
+                        title: {
+                            text: 'Net Worth'
+                        }
                     }
-                },
+                ],
 
                 series: seriesUsed,
                 legend: {

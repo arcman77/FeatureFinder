@@ -68,14 +68,14 @@ const SelectCoin = {
             }
             if (CryptoCoinDataAPI.hasCoin(coinSymobol)) {
                 CryptoCoinDataAPI.addUserCoin(coinSymobol);
-                const self = this;
+                // const self = this;
                 CryptoCoinDataAPI.scrapeHomepageUrl(coinSymobol).then((successStatus) => {
                     if (successStatus) {
-                        self.$console.log('good successStatus', successStatus)
+                        // self.$console.log('good successStatus', successStatus)
                         // self.$console.log(self.selectedCoins)
                     } else {
-                        self.$console.log('bad successStatus: ')
-                        self.$console.log(successStatus)
+                        // self.$console.log('bad successStatus: ')
+                        // self.$console.log(successStatus)
                     }
                 }).catch(() => {
                     this.$console.log('did not find coin homepage');

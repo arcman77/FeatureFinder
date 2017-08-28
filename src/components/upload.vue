@@ -26,7 +26,7 @@ const upload = {
             reader.onload = function() {
                 // Entire file
                 fileObj.fileStr = this.result;
-                UserFilesAPI.addUserFile(fileObj, 'sync').then((result) => {
+                UserFilesAPI.addUserFile(fileObj, 'sync').then(() => {
                     // self.$console.log(UserFilesAPI)
                 });
             };

@@ -14,7 +14,8 @@ const Algos = {
             userFilesServedData: UserFilesAPI.servedData,
             cryptoCoinServedData: CryptoCoinDataAPI.servedData,
             selectedFileHashKey: null,
-            gearHoverState: false
+            gearHoverState: false,
+            algoOptions: ''
         };
     },
     components: {
@@ -28,7 +29,8 @@ const Algos = {
             this.setData('bittrex', this.priceData);
         },
         performRunMenuAction(symbol) {
-            const signals = this.getSignals(this.selectedFileHashKey, symbol);
+            const options = this.getCurrentAlgoOptions();
+            const signals = this.getSignals(this.selectedFileHashKey, symbol, options);
             console.log(signals);
         },
         setFile(hashKey) {
@@ -46,16 +48,26 @@ const Algos = {
                 priceData: priceData
             });
         },
-        getSignals(hashKey, symbol) {
+        getSignals(hashKey, symbol, options) {
             AlgoAPI.sendMessage({
                 command: 'getSignals',
                 hashKey: hashKey,
-                symbol: symbol
+                symbol: symbol,
+                options: options
             });
         },
         getCoinName(symbol) {
             const info = CryptoCoinDataAPI.generalCoinInfo[symbol];
             return info ? info.name : null;
+        },
+        getCurrentAlgoOptions() {
+            let options;
+            try {
+                options = JSON.parse(this.algoOptions);
+            } catch (err) {
+                alert(err);
+            }
+            return options;
         },
         listenForSignals() {
             const self = this;
@@ -80,6 +92,7 @@ const Algos = {
                 text: `sold ${signal[2]} coins at: $${signal[1]}`,
                 id: `sflag-${index}`,
             }));
+            const netWorthSeries = signals.netWorth;
             //add sub-series buy-signals
             series.push({
                 type: 'flags',
@@ -111,6 +124,15 @@ const Algos = {
                 style: { color: 'black' },
                 fillColor: '#18a689',
                 turboThreshold: 0
+            });
+
+            series.push({
+                type: 'line',
+                color: '#CFB53B',
+                name: 'Net Worth',
+                showInLegend: true,
+                data: netWorthSeries,
+                yAxis: 1
             });
             return series; //contains regular Tick data in addition to the newly generated signals
         }
@@ -207,6 +229,15 @@ export default Algos;
                 </div>
             </dropdown>
         </div>
+        <div id="algo-options">
+            <input id="algo-options-input"
+                type="text"
+                autocorrect="off"
+                name="options"
+                placeholder='{ "key":  value }'
+                v-model="algoOptions">
+                PARAMS
+        </div>
     </div>
 </template>
 <style lang="scss">
@@ -271,6 +302,30 @@ export default Algos;
         .wrapper {
             display: flex;
             align-items: center;
+        }
+    }
+    #algo-options {
+        border: none;
+        padding: 7px;
+        margin-left: 5px;
+        margin-right: 5px;
+        line-height: 20px;
+        font-size: 20px;
+        max-height: 32px;
+        color: orange;
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 2px 0px;
+        background-color: rgb(26, 26, 26);
+        display: flex;
+        align-items: center;
+        #algo-options-input {
+            margin-right: 10px;
+            color: #32CD32;
+            background-color: rgb(26, 26, 26);
+            border: none;
+            font-size: 20px;
+            &:focus {
+                outline: none;
+            }
         }
     }
 }

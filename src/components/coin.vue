@@ -64,11 +64,7 @@ const Coin = {
             this.homepage = info ? info.homepage : null;
         },
         fetchData(coinSymbol, minuteInterval) {
-            // const self = this;
-            CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval)
-            .then((data) => {
-                // self.$console.log(data)
-            });
+            CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval);
         },
         performMenuAction(actionValue) {
             this.fetchData(this.symbol, actionValue);
