@@ -179,6 +179,13 @@ const Utils = {
     getFileExtension(filename) {
         const ext = filename.match(/.*\.(.*)$/);
         return ext ? ext[1] : null;
+    },
+    //highstock formatters
+    highstockFormatter(source, rawData) {
+        return Utils[`${source}ToHighstock`](rawData);
+    },
+    bittrexToHighstock(rawData) {
+        return rawData.map(data => [Number(new Date(data.T)), data.C]);
     }
 };
 

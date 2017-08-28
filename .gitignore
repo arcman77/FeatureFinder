@@ -6,4 +6,5 @@ npm-debug.log
 !.eslintignore
 !.eslintrc.js
 extension_bundle
+algos
 build/GA_PRODUCT_CODE.js

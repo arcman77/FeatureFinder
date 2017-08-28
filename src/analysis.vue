@@ -1,30 +1,13 @@
-<template>
-    <div id="app-analysis">
-        <graph v-if="selectedCoin && loadedTickData"
-            :symbol="selectedCoin"
-            :data="loadedTickData">
-        </graph>
-        <div class="tools-right">
-            <select-coin class="tools"
-                @coinSelected="setSelectedCoin">
-            </select-coin>
-            <manage-memory class="tools">
-            </manage-memory>
-        </div>
-    </div>
-</template>
-    
 <script>
 
 /* eslint-disable no-unused-vars */
 import _ from 'lodash';
 import './stylesheets/app.scss';
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
-// import DB from './providers/storage';
-import GraphAPI from './providers/graphAPI';
 import SelectCoin from './components/selectCoin.vue';
 import ManageMemory from './components/manageMemory.vue';
 import Graph from './components/graph.vue';
+import ToolsMain from './components/toolsMain.vue';
 import Utils from './providers/utils';
 
 // eslint-disable-next-line no-unused-vars
@@ -33,13 +16,15 @@ const app = {
         return {
             showGraph: false,
             selectedCoin: null,
-            servedData: CryptoCoinDataAPI.servedData
+            servedData: CryptoCoinDataAPI.servedData,
+            signals: null
         };
     },
     components: {
         'graph': Graph,
         'select-coin': SelectCoin,
-        'manage-memory': ManageMemory
+        'manage-memory': ManageMemory,
+        'tools-main': ToolsMain
     },
     methods: {
         setSelectedCoin(symbol) {
@@ -47,6 +32,12 @@ const app = {
         },
         resizeBody() {
             document.body.style = 'width: 100vw';
+        },
+        updateSelectedCoin(symbol) {
+            this.selectedCoin = symbol;
+        },
+        setSignals(signals) {
+            this.signals = signals;
         }
     },
     computed: {
@@ -63,26 +54,45 @@ const app = {
         if (params) {
             this.selectedCoin = params;
         }
-    },
-    mounted() {
-    },
-    beforeDestroy() {
     }
 };
 
 export default app;
 
-//function graph
-
-//function upload algo
-
-//function code-algo-in-browser
 </script>
+
+<template>
+    <div id="app-analysis">
+        <div id="top">
+            <graph v-if="selectedCoin && loadedTickData"
+                :symbol="selectedCoin"
+                :data="loadedTickData"
+                :series="signals">
+            </graph>
+            <div class="tools-right">
+                <select-coin class="tools"
+                    @coinSelected="setSelectedCoin">
+                </select-coin>
+                <manage-memory class="tools">
+                </manage-memory>
+            </div>
+        </div>
+        <div id="bottom">
+            <tools-main 
+                @coinSelected="updateSelectedCoin"
+                :selectedCoin="selectedCoin"
+                @signals="setSignals">
+            </tools-main>
+        </div>
+    </div>
+</template>
+
 <style lang="scss">
 $jet-black: #1A1A1A;
 
 html {
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 *,
@@ -93,19 +103,25 @@ html {
 
 #app-analysis {
     width: 100vw;
-    max-height: 50vh;
+    max-height: 100vh;
     display: flex;
-    background-color: $jet-black;
-}
-
-.tools-right {
-    width: 40vw;
-    display: inline-flex;
     flex-direction: column;
-}
-
-.tools {
-    
+    background-color: $jet-black;
+    #top {
+        max-height: 50vh;
+        height: 50vh;
+        display: flex;
+        flex-direction: row;
+        .tools-right {
+            width: 40vw;
+            display: inline-flex;
+            flex-direction: column;
+        }
+    }
+    #bottom {
+        max-height: 50vh;
+        height: 50vh;
+    }
 }
 
 </style>
