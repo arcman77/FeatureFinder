@@ -64,11 +64,7 @@ const Coin = {
             this.homepage = info ? info.homepage : null;
         },
         fetchData(coinSymbol, minuteInterval) {
-            // const self = this;
-            CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval)
-            .then((data) => {
-                // self.$console.log(data)
-            });
+            CryptoCoinDataAPI.fetch.historic.priceData(coinSymbol, minuteInterval);
         },
         performMenuAction(actionValue) {
             this.fetchData(this.symbol, actionValue);
@@ -93,11 +89,11 @@ const Coin = {
             if (len > 5000) {
                 backgroundColor = '#00ce85';
                 borderColor = '#00b6ce';
-                borderWidth = '5px';
+                borderWidth = '2px';
             } else if (len > 1000) {
                 backgroundColor = 'yellow';//#f7db07
                 borderColor = '#e0b108';
-                borderWidth = '3px';
+                borderWidth = '2px';
             } else {
                 backgroundColor = '#c40105';
                 borderColor = '#c60139';

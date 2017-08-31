@@ -18,12 +18,13 @@ class CoinMarketCap {
         return `${coinPageUrl}${coinName}`;
     }
     getCoinHomepage(coinName) {
+        const self = this;
         return $.ajax({
             method: 'GET',
-            url: this.getCoinPageUrl(coinName)
+            url: self.getCoinPageUrl(coinName)
         }).then((htmlString) => {
-            const index = htmlString.match(this.coinWebsiteStringPattern).index;
-            const offset = this.coinWebsiteStringPattern.length;
+            const index = htmlString.match(self.coinWebsiteStringPattern).index;
+            const offset = self.coinWebsiteStringPattern.length;
             if (index) {
                 let c1 = null;
                 let c2 = null;

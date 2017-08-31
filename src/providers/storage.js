@@ -11,15 +11,11 @@
 /* eslint-disable no-underscore-dangle */
 
 function DB() {
-    var self = this;
     this.CHROME_SYNC_STORAGE_QUOTA = 102400; //BYTES
     this.storage = chrome.storage;
     this.localStorage = this.storage.local;
     this.syncStorage = this.storage.sync;
     this.$console = chrome.extension.getBackgroundPage().console;
-    this.syncStorage.get(['_userFiles_'], (userFiles) => {
-        self.userFiles = userFiles || {};
-    });
 }
 
 DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
@@ -27,10 +23,6 @@ DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
     return new Promise((resolve, reject) => {
         try {
             asyncFunc(args, (results) => {
-                // self.$console.log('in asyncFunc callback')
-                // self.$console.log('args: \n', args)
-                // self.$console.log('asyncFunc: \n', asyncFunc)
-                // self.$console.log('results: \n', results)
                 resolve(results);
             });
         } catch (err) {
@@ -40,7 +32,6 @@ DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
 };
 
 DB.prototype.syncGetItem = function(key) {
-    this.$console.log('get')
     return this._syncStorageQueryTemplate_(key, this.syncStorage.get);
 };
 
@@ -56,7 +47,6 @@ DB.prototype.syncGetAll = function() {
 */
 
 DB.prototype.syncSetItem = function(dictionary) {
-    this.$console.log('set')
     return this._syncStorageQueryTemplate_(dictionary, this.syncStorage.set);
 };
 

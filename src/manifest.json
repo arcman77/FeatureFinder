@@ -15,9 +15,14 @@
         "unlimitedStorage",
         "https://ajax.googleapis.com/",
         "https://bittrex.com/",
-        "https://www.cryptocompare.com/"
+        "https://www.cryptocompare.com/",
+        "https://coinmarketcap.com/"
     ],
     "background": {
         "page": "app.html"
-    }
+    },
+    "sandbox": {
+        "pages": ["runAlgos.html"]
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

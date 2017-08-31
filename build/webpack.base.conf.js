@@ -8,7 +8,8 @@ module.exports = {
     entry: {
         vendor: ['babel-polyfill'],
         main: path.resolve('src', 'main.js'),
-        analysisMain: path.resolve('src', 'analysisMain.js')
+        analysisMain: path.resolve('src', 'analysisMain.js'),
+        iframeInterface: path.resolve('src', 'sandbox', 'iframeInterface.js')
     },
     output: {
         path: path.resolve('extension_bundle'),
@@ -19,7 +20,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 use: 'babel-loader',
-                exclude: /node_modules/
+                exclude: [/node_modules/, /sandbox/]
             },
             {
                 test: require.resolve('jquery'),
@@ -67,6 +68,14 @@ module.exports = {
                 test: /manifest\.json$/,
                 use: 'file-loader?name=[name].[ext]'
             },
+            // {
+            //     test: /runAlgo\.html$/,
+            //     use: 'file-loader?name=[name].[ext]'
+            // },
+            // {
+            //     test: /iframeInterface\.js$/,
+            //     use: 'babel-loader'
+            // },
             {
                 test: /icon\.png$/,
                 use: 'file-loader?name=[name].[ext]'
@@ -93,15 +102,22 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'app.html',
             template: 'app.html',
-            excludeChunks: ['analysisMain'],
+            excludeChunks: ['analysisMain', 'iframeInterface'],
             inject: true
         }),
 
         new HtmlWebpackPlugin({
             filename: 'analysis.html',
             template: 'analysis.html',
-            excludeChunks: ['main'],
-            inhect: true
+            excludeChunks: ['main', 'iframeInterface'],
+            inject: true
+        }),
+
+        new HtmlWebpackPlugin({
+            filename: 'runAlgo.html',
+            template: 'runAlgo.html',
+            excludeChunks: ['main', 'analysisMain'],
+            inject: true
         }),
         //Sets variables based on config file
         new webpack.DefinePlugin({
