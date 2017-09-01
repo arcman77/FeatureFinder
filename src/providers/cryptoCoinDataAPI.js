@@ -20,12 +20,15 @@ class CryptoCoinDataAPI {
             localBytesInUse: 0,
             syncBytesInUse: 0
         };
+
+        console.log('Doing API');
         this.providers = {
             bittrex: new Bittrex(),
             coinMarketCap: new CoinMarketCap(),
             cryptoCompare: new CryptoCompare({
                 selectedCoins: this.servedData.selectedCoins,
                 priceData: this.servedData.liveData,
+                db: this.DB,
                 CryptoCoinDataAPI: this
             })
         };

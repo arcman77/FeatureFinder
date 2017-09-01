@@ -20,6 +20,7 @@ import io from 'socket.io-client';
 // TODO: need to establish working reactivity of selected coins
 class CryptoCompare {
     constructor(opts = {}) {
+
         this.name = 'cryptocompare';
         this.baseUrl = 'https://www.cryptocompare.com';
         this.socket = io.connect('https://streamer.cryptocompare.com/');
@@ -28,17 +29,24 @@ class CryptoCompare {
         const CryptoCoinDataAPI = opts.CryptoCoinDataAPI;
         this.servedData = CryptoCoinDataAPI.servedData;
         // this.userSelectedCoins = this.servedData;
-        window.test = this.servedData;
+        this.DB = opts.db;
 
-        this.selectedCoins = this.servedData.selectedCoins;
+        // this.selectedCoins = this.servedData.selectedCoins;
+        // window.selectedCoins = this.selectedCoins;
 
-        // this.selectedCoins = [{ symbol: 'BTC' }, { symbol: 'ETH' }, { symbol: 'NMR' }];
+        this.selectedCoins = [{ symbol: 'BTC' }, { symbol: 'ETH' }, { symbol: 'NMR' }];
         this.liveData = opts.liveData || [];
         this.console = chrome.extension.getBackgroundPage().console;
         this.subscriptions = [];
-        this.initSubscriptions();
+        // this.DB.onSyncChange((changes) => {
+        //     console.log('These are changes', changes);
+        // });
+
+        // this.initSubscriptions();
         // this.socket.on('m', this.handleUpdate.bind(this));
         this.socket.on('m', this.handleUpdate.bind(this));
+
+        // console.log('SC', CryptoCoinDataAPI.servedData.selectedCoins);
     }
 
     initSubscriptions() {
@@ -51,7 +59,7 @@ class CryptoCompare {
             this.subscriptions.push(`5~CCCAGG~${coin}~${quotePair}`);
         });
 
-        console.log('Adding', this.subscriptions);
+        this.console.log('Adding', this.subscriptions);
         this.socket.emit('SubAdd', { subs: this.subscriptions });
 
         // this.selectedCoins.on('change', this.updateSubscriptions.bind(this));
@@ -74,7 +82,7 @@ class CryptoCompare {
             }
         });
 
-        console.log('Adding new', newSubscriptions);
+        this.console.log('Adding new', newSubscriptions);
         this.socket.emit('SubAdd', { subs: newSubscriptions });
     }
 

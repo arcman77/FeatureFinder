@@ -18,6 +18,23 @@ function DB() {
     this.$console = chrome.extension.getBackgroundPage().console;
 }
 
+DB.prototype.onSyncChange = function(cb) {
+    chrome.storage.onChanged.addListener((...args) => {
+        console.log('Reading change', changes);
+        if (args.area === 'sync') {
+            cb(...args);
+        }
+    });
+}
+
+DB.prototype.onLocalChange = function(cb) {
+    chrome.storage.onChanged.addListener((...args) => {
+        if (args.area === 'local') {
+            cb(...args);
+        }
+    });
+}
+
 DB.prototype._syncStorageQueryTemplate_ = function(args, asyncFunc) {
     // const self = this;
     return new Promise((resolve, reject) => {
