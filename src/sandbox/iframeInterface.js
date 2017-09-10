@@ -12,6 +12,8 @@ class MessageInterface {
         this.files = {};
         this.userFunctions = {};
         this.priceData = {};
+        this.jobs = {};
+        this.jobsCount = 0;
         this.pendingRequests = {};
         this.listenForCommands();
     }
@@ -59,12 +61,20 @@ class MessageInterface {
     getSignals(event) {
         const fileKey = event.data.hashKey || event.data.filename;
         const symbol = event.data.symbol;
-        const ops = event.data.options;
+        const options = event.data.options;
         const file = this.getFile(fileKey);
-        const signals = this.runFile(file.fileStr, symbol, ops);
+        const signals = this.runFile(file.fileStr, symbol, options);
         event.source.postMessage({
             signals: signals
         }, event.origin);
+    }
+    jobFinish(event) {
+        const id = event.data.id;
+        const results = event.data.results;
+        //resolves the promise
+        this.jobs[id](results);
+        delete this.jobs[id];
+        this.jobsCount --;
     }
     /**
      * @param {fileInfo} Object -
@@ -78,40 +88,10 @@ class MessageInterface {
             fileStr: fileInfo.fileStr
         };
     }
-    optimizer(fileStr, symbol, opsRanges) {
-        const self = this;
-        const paramKeys = Object.keys(opsRanges);
-        let minP;
-        let maxP;
-        let varyParam;
-        let delta;
-        let ops;
-        // if coupled
-        // if uncoupled
-        paramKeys.forEach((param) => {
-            if (Array.isArray(opsRanges[param])) {
-                const range = opsRanges[param];
-                ops = {};
-                range.forEach((value) => {
-                    ops[param] = value;
-                    self.runFile(fileStr, symbol, ops);
-                });
-            } else {
-                minP = opsRanges[param].rangeStart;
-                maxP = opsRanges[param].rangeEnd;
-                delta = opsRanges[param].delta || 1;
-                for (varyParam = minP; varyParam <= maxP; varyParam += delta) {
-                    ops = {};
-                    ops[param] = varyParam;
-                    self.runFile(fileStr, symbol, ops);
-                }
-            }
-        });
-    }
     runFile(fileStr, symbol, ops) {
         const self = this;
         //eslint-disable-next-line no-unused-vars
-        window.utils = new AlgoUtils(5000);
+        window.utils = new AlgoUtils(ops.startCash || 5000);
         //eslint-disable-next-line no-eval
         window.eval(fileStr); // user defines getSignals
         //eslint-disable-next-line no-undef
@@ -133,6 +113,64 @@ class MessageInterface {
             });
         }
         return fileFound;
+    }
+    optimize(event) {
+        const fileKey = event.data.hashKey || event.data.filename;
+        const symbol = event.data.symbol;
+        const options = event.data.options;
+        const file = this.getFile(fileKey);
+        this.startJob(file, symbol, options).then((results) => {
+            event.source.postMessage({
+                results: results
+            }, event.origin);
+        });
+    }
+    startJob(fileStr, symbol, options) {
+        const jobManager = this.constructor.createSharedWorker();
+
+        function setWorkerFile(file) {
+            jobManager.postMessage({
+                command: 'setFile',
+                file: file
+            });
+        }
+        function setWorkerData(priceData) {
+            jobManager.postMessage({
+                command: 'setData',
+                priceData: priceData
+            });
+        }
+        function setWorkerRole(role) {
+            jobManager.postMessage({
+                command: 'setRole',
+                role: role,
+            });
+        }
+        function getWorkerSignals(optionss, id) {
+            jobManager.postMessage({
+                command: 'getSignals',
+                options: optionss,
+                id: id
+            });
+        }
+        const id = Math.random();
+        setWorkerFile(fileStr);
+        setWorkerData(this.priceData[symbol]);
+        setWorkerRole('manager', id);
+        getWorkerSignals(options);
+        const self = this;
+        const p = new Promise((resolve) => {
+            self.jobs[id] = resolve;
+        });
+        this.jobsCount ++;
+        return p;
+    }
+    static createSharedWorker() {
+        //var myWorker = new SharedWorker(aURL, options);
+        return new SharedWorker('runFileOnSharedWorker.js');
+    }
+    static destroySharedWorker(sharedWorker) {
+        sharedWorker.terminate();
     }
 }
 
