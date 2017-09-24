@@ -1,4 +1,4 @@
-import AlgoUtils from './algoUtils';
+import AlgoUtils from '../sandbox/algoUtils';
 
 //eslint-disable-next-line no-unused-vars
 class SharedWorkerMessageInterface {
@@ -14,15 +14,17 @@ class SharedWorkerMessageInterface {
         this.listenForCommands();
     }
     listenForCommands() {
-        const self = this;
-        window.addEventListener('message', (event) => {
+        const thiss = this;
+        self.onmessage = (event) => {
+            console.log('from worker:')
+            console.log(event)
             const command = event.data.command;
-            self[command](event);
-        });
+            thiss[command](event);
+        };
     }
     setRole(event) {
         this.role = event.data.role;
-        event.source.postMessage({
+        self.postMessage({
             success: true
         }, event.origin);
     }
@@ -30,7 +32,7 @@ class SharedWorkerMessageInterface {
     /*{ command: 'setFile', fileInfo: String }*/
     setFile(event) {
         this.file = event.data.file;
-        event.source.postMessage({
+        self.postMessage({
             success: true
         }, event.origin);
     }
@@ -42,7 +44,7 @@ class SharedWorkerMessageInterface {
     */
     setData(event) {
         this.priceData = event.data.priceData;
-        event.source.postMessage({
+        self.postMessage({
             success: true
         }, event.origin);
     }
@@ -52,10 +54,21 @@ class SharedWorkerMessageInterface {
     */
     getSignals(event) {
         const ops = event.data.options;
+        const id = event.data.id;
+        self.postMessage({
+            command: 'getSignals',
+            status: 'recieved',
+            id: id
+        });
         const signals = this.runFile(this.file, this.priceData, ops);
-        event.source.postMessage({
-            signals: signals
-        }, event.origin);
+        if (this.role === 'slave') {
+            signals.netWorth = [signals.netWorth[signals.netWorth.length - 1]];
+            self.postMessage({
+                results: signals,
+                command: 'slaveFinish',
+                id: id
+            });
+        }
     }
     slaveFinish(event) {
         const id = event.data.id;
@@ -67,46 +80,65 @@ class SharedWorkerMessageInterface {
         this.slavesCount --;
     }
     runFile(fileStr, ops) {
-        const self = this;
+        // const self = this;
         //eslint-disable-next-line no-unused-vars
-        window.utils = new AlgoUtils(ops.startCash || 5000);
+        self.utils = new AlgoUtils(ops.startCash || 5000);
         //eslint-disable-next-line no-eval
-        window.eval(fileStr); // user defines getSignals
+        self.eval(fileStr); // user defines getSignals
         //eslint-disable-next-line no-undef
-        return window.getSignals(self.priceData, ops);
+        return self.getSignals(this.priceData, ops);
     }
-    optimizer(fileStr, symbol, opsRanges) {
-        const self = this;
+    optimize(event) {
+        if (this.role === 'slave') {
+            return;
+        }
+        const thiss = this;
+        const id = event.data.id;
+        const opsRanges = event.data.options.optimize;
+        const fixedOptions = event.data.options;
+        delete fixedOptions.optimize;
+        const file = this.file;
         const paramKeys = Object.keys(opsRanges);
         let minP;
         let maxP;
         let varyParam;
         let delta;
-        let ops;
+        let options;
+        const slavePromises = [];
         // if coupled:
         //
         // if uncoupled:
         paramKeys.forEach((param) => {
             if (Array.isArray(opsRanges[param])) {
                 const range = opsRanges[param];
-                ops = {};
+                options = Object.assign({}, fixedOptions);
                 range.forEach((value) => {
-                    ops[param] = value;
-                    self.runFile(fileStr, symbol, ops);
+                    options[param] = value;
+                    slavePromises.push(thiss.startSlave(file, options));
                 });
             } else {
                 minP = opsRanges[param].rangeStart;
                 maxP = opsRanges[param].rangeEnd;
                 delta = opsRanges[param].delta || 1;
+
                 for (varyParam = minP; varyParam <= maxP; varyParam += delta) {
-                    ops = {};
-                    ops[param] = varyParam;
-                    self.runFile(fileStr, symbol, ops);
+                    options = {};
+                    options[param] = varyParam;
+                    slavePromises.push(thiss.startSlave(file, options));
                 }
             }
         });
+        return Promise.all(slavePromises).then((results) => {
+            self.postMessage({
+                command: 'jobFinish',
+                results: results,
+                id: id
+            }, event.origin);
+        }).catch((err) => {
+            console.log('shit went wrong: ', err);
+        });
     }
-    static startSlave(fileStr, symbol, options) {
+    startSlave(fileStr, options) {
         const slave = this.constructor.createSharedWorker();
         function setWorkerFile(file) {
             slave.postMessage({
@@ -115,6 +147,7 @@ class SharedWorkerMessageInterface {
             });
         }
         function setWorkerData(priceData) {
+            // slave.postMessage(sab);
             slave.postMessage({
                 command: 'setData',
                 priceData: priceData
@@ -135,12 +168,12 @@ class SharedWorkerMessageInterface {
         }
         const id = Math.random();
         setWorkerFile(fileStr);
-        setWorkerData(this.priceData[symbol]);
+        setWorkerData(this.priceData);
         setWorkerRole('slave', id);
         getWorkerSignals(options);
-        const self = this;
+        const thiss = this;
         const p = new Promise((resolve) => {
-            self.slaveJobs[id] = resolve;
+            thiss.slaveJobs[id] = resolve;
         });
         this.slaves[id] = slave;
         this.slavesCount ++;
@@ -148,7 +181,8 @@ class SharedWorkerMessageInterface {
     }
     static createSharedWorker() {
         //var myWorker = new SharedWorker(aURL, options);
-        return new SharedWorker('runFileOnSharedWorker.js');
+        // return new SharedWorker('workerBundle.js');
+        return new self.Worker('workerBundle.js');
     }
     static destroySharedWorker(sharedWorker) {
         sharedWorker.terminate();

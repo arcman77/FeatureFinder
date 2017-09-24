@@ -125,6 +125,16 @@ class AlgoUtils {
         this.sCount ++;
         return id;
     }
+    //dataSet is of type [Timeset, Priceset]
+    //eslint-disable-next-line class-methods-use-this
+    sliceSBAToHighcharts(dataSet, i, j) {
+        let k;
+        const curSet = [];
+        for (k = i; k < j; k++) {
+            curSet.push([dataSet[0][k], dataSet[1][k]]);
+        }
+        return curSet;
+    }
 }
 
 export default AlgoUtils;

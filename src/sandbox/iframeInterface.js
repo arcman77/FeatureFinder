@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import Utils from '../providers/utils';
 import AlgoUtils from './algoUtils';
+
 /* Highcharts/Stockcharts graph data format
  * Array
  *     @index {0} - time - Integer
@@ -45,7 +46,8 @@ class MessageInterface {
         const self = this;
         const source = event.data.source;
         _.each(event.data.priceData, (priceData, symbol) => {
-            self.priceData[symbol] = Utils.highstockFormatter(source, priceData);
+            // self.priceData[symbol] = Utils.highstockF ormatter(source, priceData);
+            self.priceData[symbol] = Utils.sbaFormatter(source, priceData);
         });
         event.source.postMessage({
             success: true
@@ -75,6 +77,8 @@ class MessageInterface {
         this.jobs[id](results);
         delete this.jobs[id];
         this.jobsCount --;
+        console.log('optimization results from iframe: ')
+        console.log(results)
     }
     /**
      * @param {fileInfo} Object -
@@ -88,7 +92,7 @@ class MessageInterface {
             fileStr: fileInfo.fileStr
         };
     }
-    runFile(fileStr, symbol, ops) {
+    runFile(fileStr, symbol, ops = {}) {
         const self = this;
         //eslint-disable-next-line no-unused-vars
         window.utils = new AlgoUtils(ops.startCash || 5000);
@@ -118,7 +122,7 @@ class MessageInterface {
         const fileKey = event.data.hashKey || event.data.filename;
         const symbol = event.data.symbol;
         const options = event.data.options;
-        const file = this.getFile(fileKey);
+        const file = this.getFile(fileKey).fileStr;
         this.startJob(file, symbol, options).then((results) => {
             event.source.postMessage({
                 results: results
@@ -146,10 +150,10 @@ class MessageInterface {
                 role: role,
             });
         }
-        function getWorkerSignals(optionss, id) {
+        function getWorkerSignals(_options, id) {
             jobManager.postMessage({
-                command: 'getSignals',
-                options: optionss,
+                command: 'optimize',
+                options: _options,
                 id: id
             });
         }
@@ -167,7 +171,8 @@ class MessageInterface {
     }
     static createSharedWorker() {
         //var myWorker = new SharedWorker(aURL, options);
-        return new SharedWorker('runFileOnSharedWorker.js');
+        // return new SharedWorker('workerBundle.js');
+        return new Worker('workerBundle.js');
     }
     static destroySharedWorker(sharedWorker) {
         sharedWorker.terminate();

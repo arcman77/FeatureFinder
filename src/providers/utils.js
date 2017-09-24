@@ -181,11 +181,21 @@ const Utils = {
         return ext ? ext[1] : null;
     },
     //highstock formatters
-    highstockFormatter(source, rawData) {
-        return Utils[`${source}ToHighstock`](rawData);
+    sbaFormatter(source, rawData) {
+        // return Utils[`${source}ToHighstock`](rawData);
+        return Utils[`${source}ToSBA`](rawData);
     },
-    bittrexToHighstock(rawData) {
-        return rawData.map(data => [Number(new Date(data.T)), data.C]);
+    bittrexToSBA(rawData) {
+        const n = rawData.length;
+        const m = Int32Array.BYTES_PER_ELEMENT;
+        const priceData = new SharedArrayBuffer(m * n);
+        const timeData = new SharedArrayBuffer(m * n);
+        rawData.forEach((data, i) => {
+            priceData[i] = data.C;
+            timeData[i] = Number(new Date(data.T));
+        });
+        // return rawData.map(data => [Number(new Date(data.T)), data.C]);
+        return [timeData, priceData, n];
     }
 };
 

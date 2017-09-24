@@ -30,8 +30,11 @@ const Algos = {
         },
         performRunMenuAction(symbol) {
             const options = this.getCurrentAlgoOptions();
-            const signals = this.getSignals(this.selectedFileHashKey, symbol, options);
-            console.log(signals);
+            if (options && options.optimize) {
+                this.getOptimizeSignals(this.selectedFileHashKey, symbol, options);
+            } else {
+                this.getSignals(this.selectedFileHashKey, symbol, options);
+            }
         },
         setFile(hashKey) {
             const fileInfo = this.jsFiles[hashKey];
@@ -56,6 +59,14 @@ const Algos = {
                 options: options
             });
         },
+        getOptimizeSignals(hashKey, symbol, options) {
+            AlgoAPI.sendMessage({
+                command: 'optimize',
+                hashKey: hashKey,
+                symbol: symbol,
+                options: options
+            });
+        },
         getCoinName(symbol) {
             const info = CryptoCoinDataAPI.generalCoinInfo[symbol];
             return info ? info.name : null;
@@ -65,7 +76,7 @@ const Algos = {
             try {
                 options = JSON.parse(this.algoOptions);
             } catch (err) {
-                alert(err);
+                // alert(err);
             }
             return options;
         },

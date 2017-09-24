@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+// var CopyWebpackPlugin = require('copy-webpack-plugin');
 var config = require('./config');
 
 module.exports = {
@@ -9,7 +10,8 @@ module.exports = {
         vendor: ['babel-polyfill'],
         main: path.resolve('src', 'main.js'),
         analysisMain: path.resolve('src', 'analysisMain.js'),
-        iframeInterface: path.resolve('src', 'sandbox', 'iframeInterface.js')
+        iframeInterface: path.resolve('src', 'sandbox', 'iframeInterface.js'),
+        worker: path.resolve('src', 'worker', 'workerNoClass.js'),
     },
     output: {
         path: path.resolve('extension_bundle'),
@@ -68,14 +70,10 @@ module.exports = {
                 test: /manifest\.json$/,
                 use: 'file-loader?name=[name].[ext]'
             },
-            // {
-            //     test: /runAlgo\.html$/,
-            //     use: 'file-loader?name=[name].[ext]'
-            // },
-            // {
-            //     test: /iframeInterface\.js$/,
-            //     use: 'babel-loader'
-            // },
+            {
+                test: /worker\.js$/,
+                use: 'babel-loader'
+            },
             {
                 test: /icon\.png$/,
                 use: 'file-loader?name=[name].[ext]'
@@ -98,6 +96,10 @@ module.exports = {
             filename: 'app.css',
             allChunks: true,
         }),
+        // Copy static files from worker directory
+        // new CopyWebpackPlugin([
+        //     { from: 'src/worker/worker.js' }
+        // ]),
         // Build html file, inject output files
         new HtmlWebpackPlugin({
             filename: 'app.html',

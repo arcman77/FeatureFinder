@@ -33,6 +33,7 @@ module.exports = {
     },
     "globals": {
         "Vue": true,
-        "chrome": true
+        "chrome": true,
+        "SharedArrayBuffer": true
     }
 };
