@@ -6,7 +6,8 @@
             <algos 
                 :selectedCoin="selectedCoin"
                 @coinSelected="emitCoinSelected"
-                @signals="emitSignals">
+                @signals="emitSignals"
+                @optimizeSeries="emitOptimizeSeries">
             </algos>
         </div>
         <div class="toolbar-stats">
@@ -29,6 +30,9 @@ const ToolbarMain = {
     methods: {
         emitCoinSelected(symbol) {
             this.$emit('coinSelected', symbol);
+        },
+        emitOptimizeSeries(series, paramName) {
+            this.$emit('optimizeSeries', series, paramName);
         },
         emitSignals(signals) {
             this.$emit('signals', signals);

@@ -3,7 +3,8 @@
         <toolbar-main
             @coinSelected="emitCoinSelected" 
             :selectedCoin="selectedCoin"
-            @signals="emitSignals">
+            @signals="emitSignals"
+            @optimizeSeries="emitOptimizeSeries">
         </toolbar-main>
     </div>
 </template>
@@ -22,7 +23,10 @@ const ToolsMain = {
         },
         emitSignals(signals) {
             this.$emit('signals', signals);
-        }
+        },
+        emitOptimizeSeries(series, paramName) {
+            this.$emit('optimizeSeries', series, paramName);
+        },
     }
 };
 

@@ -181,21 +181,39 @@ const Utils = {
         return ext ? ext[1] : null;
     },
     //highstock formatters
-    sbaFormatter(source, rawData) {
-        // return Utils[`${source}ToHighstock`](rawData);
-        return Utils[`${source}ToSBA`](rawData);
+    highstocksFormatter(source, rawData) {
+        return Utils[`${source}ToHighstock`](rawData);
+        // return Utils[`${source}ToSBA`](rawData);
     },
-    bittrexToSBA(rawData) {
+    copyIntoSharedArray(pBuffer, tBuffer, dataInfo) {
+        //at this point webworker should have the buffer as well
+        const timeData = new Int32Array(tBuffer);
+        const priceData = new Float32Array(pBuffer);
+        for (let i = 0; i < dataInfo.length; i++) {
+            priceData[i] = dataInfo.priceData[i];
+            timeData[i] = i;//dataInfo.timeData[i];
+        }
+        return { pBuffer, tBuffer };
+    },
+    bittrexToHighstock(rawData) {
         const n = rawData.length;
         const m = Int32Array.BYTES_PER_ELEMENT;
-        const priceData = new SharedArrayBuffer(m * n);
-        const timeData = new SharedArrayBuffer(m * n);
+        // const mf = Float32Array.BYTES_PER_ELEMENT;
+        const priceData = [];//new SharedArrayBuffer(m * n);
+        const timeData = [];//new SharedArrayBuffer(mf * n);
         rawData.forEach((data, i) => {
             priceData[i] = data.C;
             timeData[i] = Number(new Date(data.T));
         });
-        // return rawData.map(data => [Number(new Date(data.T)), data.C]);
-        return [timeData, priceData, n];
+        return {
+            timeData,
+            priceData,
+            length: n,
+            offset: m
+        };
+    },
+    networthToHighstock(networth, key) {
+        return [networth[1][key], networth[0][1]];
     }
 };
 

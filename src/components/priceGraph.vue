@@ -7,7 +7,7 @@ const graph = {
     props: ['data', 'symbol', 'series'],
     data() {
         return {
-            scale: 'min'
+            scale: 'minute'
         };
     },
     computed: {

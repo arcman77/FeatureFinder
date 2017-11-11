@@ -128,10 +128,13 @@ class AlgoUtils {
     //dataSet is of type [Timeset, Priceset]
     //eslint-disable-next-line class-methods-use-this
     sliceSBAToHighcharts(dataSet, i, j) {
+        const isArray = Array.isArray(dataSet);
+        const key0 = isArray ? 0 : 'timeData';
+        const key1 = isArray ? 1 : 'priceData';
         let k;
         const curSet = [];
         for (k = i; k < j; k++) {
-            curSet.push([dataSet[0][k], dataSet[1][k]]);
+            curSet.push([dataSet[key0][k], dataSet[key1][k]]);
         }
         return curSet;
     }

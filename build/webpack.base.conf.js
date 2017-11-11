@@ -104,21 +104,21 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'app.html',
             template: 'app.html',
-            excludeChunks: ['analysisMain', 'iframeInterface'],
+            excludeChunks: ['analysisMain', 'iframeInterface', 'worker'],
             inject: true
         }),
 
         new HtmlWebpackPlugin({
             filename: 'analysis.html',
             template: 'analysis.html',
-            excludeChunks: ['main', 'iframeInterface'],
+            excludeChunks: ['main', 'iframeInterface', 'worker'],
             inject: true
         }),
 
         new HtmlWebpackPlugin({
             filename: 'runAlgo.html',
             template: 'runAlgo.html',
-            excludeChunks: ['main', 'analysisMain'],
+            excludeChunks: ['main', 'analysisMain', 'worker'],
             inject: true
         }),
         //Sets variables based on config file

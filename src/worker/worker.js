@@ -16,8 +16,8 @@ class SharedWorkerMessageInterface {
     listenForCommands() {
         const thiss = this;
         self.onmessage = (event) => {
-            console.log('from worker:')
-            console.log(event)
+            console.log('from worker:');
+            console.log(event);
             const command = event.data.command;
             thiss[command](event);
         };

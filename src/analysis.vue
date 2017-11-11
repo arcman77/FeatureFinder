@@ -6,7 +6,8 @@ import './stylesheets/app.scss';
 import CryptoCoinDataAPI from './providers/cryptoCoinDataAPI';
 import SelectCoin from './components/selectCoin.vue';
 import ManageMemory from './components/manageMemory.vue';
-import Graph from './components/graph.vue';
+import PriceGraph from './components/priceGraph.vue';
+import OptimizeGraph from './components/optimizeGraph.vue';
 import ToolsMain from './components/toolsMain.vue';
 import Utils from './providers/utils';
 
@@ -17,11 +18,18 @@ const app = {
             showGraph: false,
             selectedCoin: null,
             servedData: CryptoCoinDataAPI.servedData,
-            signals: null
+            signals: null,
+            optimizeSeries: null,
+            paramName: null,
+            graphs: {
+                price: true,
+                optimize: false
+            }
         };
     },
     components: {
-        'graph': Graph,
+        'price-graph': PriceGraph,
+        'optimize-graph': OptimizeGraph,
         'select-coin': SelectCoin,
         'manage-memory': ManageMemory,
         'tools-main': ToolsMain
@@ -29,6 +37,10 @@ const app = {
     methods: {
         setSelectedCoin(symbol) {
             this.selectedCoin = symbol;
+        },
+        setOptimizeSeries(series, paramName) {
+            this.paramName = paramName;
+            this.optimizeSeries = series;
         },
         resizeBody() {
             document.body.style = 'width: 100vw';
@@ -38,6 +50,9 @@ const app = {
         },
         setSignals(signals) {
             this.signals = signals;
+        },
+        selectGraph(name) {
+
         }
     },
     computed: {
@@ -64,11 +79,27 @@ export default app;
 <template>
     <div id="app-analysis">
         <div id="top">
-            <graph v-if="selectedCoin && loadedTickData"
+            <ul id="graphs-tab">
+                <li id="price-graph-tab"
+                    @click="selectGraph('price')">        
+                </li>
+                <li id="optimize-graph-tab"
+                    
+                    @click="selectGraph('optimize')">
+                </li>
+            </ul>
+            <price-graph v-if="selectedCoin && loadedTickData"
+                v-show="graphs.price"
                 :symbol="selectedCoin"
                 :data="loadedTickData"
                 :series="signals">
-            </graph>
+            </price-graph>
+            <optimize-graph v-if="optimizeSeries"
+                v-show="graphs.optimize"
+                :symbol="selectedCoin"
+                :paramName="paramName"
+                :series="optimizeSeries">    
+            </optimize-graph>
             <div class="tools-right">
                 <select-coin class="tools"
                     @coinSelected="setSelectedCoin">
@@ -81,7 +112,8 @@ export default app;
             <tools-main 
                 @coinSelected="updateSelectedCoin"
                 :selectedCoin="selectedCoin"
-                @signals="setSignals">
+                @signals="setSignals"
+                @optimizeSeries="setOptimizeSeries">
             </tools-main>
         </div>
     </div>

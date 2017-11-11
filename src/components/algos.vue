@@ -4,6 +4,7 @@ import _ from 'lodash';
 import CryptoCoinDataAPI from '../providers/cryptoCoinDataAPI';
 import AlgoAPI from '../providers/algoAPI';
 import UserFilesAPI from '../providers/userFilesAPI';
+import Utils from '../providers/utils';
 import Dropdown from './dropdown.vue';
 import Gear from './gear.vue';
 
@@ -15,7 +16,9 @@ const Algos = {
             cryptoCoinServedData: CryptoCoinDataAPI.servedData,
             selectedFileHashKey: null,
             gearHoverState: false,
-            algoOptions: ''
+            algoOptions: '',
+            optimizationResults: null,
+            paramSeries: {}
         };
     },
     components: {
@@ -30,6 +33,8 @@ const Algos = {
         },
         performRunMenuAction(symbol) {
             const options = this.getCurrentAlgoOptions();
+            window.localStorage.setItem('algoOptions', this.algoOptions);
+            this.optimizeOptions = options;
             if (options && options.optimize) {
                 this.getOptimizeSignals(this.selectedFileHashKey, symbol, options);
             } else {
@@ -76,16 +81,38 @@ const Algos = {
             try {
                 options = JSON.parse(this.algoOptions);
             } catch (err) {
-                // alert(err);
+                //alert(err);
             }
             return options;
+        },
+        singleRunSignals(event) {
+            const series = this.convertSignalsToSeries(event.data.signals);
+            this.$emit('signals', series);
+        },
+        jobFinish(event) {
+            const self = this;
+            const results = event.data.results;
+            this.optimizationResults = results;
+            const params = this.optimizeOptions.optimize;
+            _.each(params, (paramObj, paramName) => {
+                //eslint-disable-next-line arrow-body-style
+                self.paramSeries[paramName] = results.map((result) => {
+                    return Utils.networthToHighstock(result.netWorth, paramName);
+                });
+            });
+            const firstKey = Object.keys(this.paramSeries)[0];
+            const series = this.convertOptimizeResultsToSeries(this.paramSeries[firstKey]);
+            this.$emit('optimizeSeries', series, firstKey);
         },
         listenForSignals() {
             const self = this;
             window.addEventListener('message', (event) => {
-                if (event.data.signals) {
-                    const series = self.convertSignalsToSeries(event.data.signals);
-                    self.$emit('signals', series);
+                const command = event.data.command;
+                if (command) {
+                    self[command](event);
+                } else {
+                    console.log('unknown message:');
+                    console.log(event);
                 }
             });
         },
@@ -136,21 +163,39 @@ const Algos = {
                 fillColor: '#18a689',
                 turboThreshold: 0
             });
-
             series.push({
                 type: 'line',
                 color: '#CFB53B',
-                name: 'Net Worth',
+                title: 'Net Worth',
                 showInLegend: true,
                 data: netWorthSeries,
                 yAxis: 1
             });
             return series; //contains regular Tick data in addition to the newly generated signals
+        },
+        convertOptimizeResultsToSeries(signals) {
+            const series = [];
+            series.push({
+                type: 'line',
+                color: 'red',
+                id: 'optimize-results',
+                yAxis: 0,
+                name: 'Net Worth',
+                showInLegend: true,
+                data: signals,
+            });
+            return series;
+        },
+        setLastUsedAlgoOptions() {
+            this.algoOptions = window.localStorage.getItem('algoOptions');
         }
     },
     computed: {
         jsFiles() {
-            return this.userFilesServedData.jsFiles;
+            return this.userFiles.jsFiles;
+        },
+        userFiles() {
+            return this.userFilesServedData;
         },
         priceData() {
             return this.cryptoCoinServedData.priceData;
@@ -159,6 +204,8 @@ const Algos = {
             return this.cryptoCoinServedData.selectedCoins;
         },
         fileOptions() {
+            //eslint-disable-next-line no-unused-expressions
+            this.jsFiles;
             const options = [];
             _.each(this.jsFiles, (jsFileInfo, hashKey) => {
                 options.push({
@@ -197,6 +244,7 @@ const Algos = {
             self.hashWatcher = null;
         });
         this.listenForSignals();
+        this.setLastUsedAlgoOptions();
     }
 };
 
